@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class AURA_API AAuraEnemy : public AAuraCharacter,public IEnemyInterface,public IAbilitySystemInterface
+class AURA_API AAuraEnemy : public AAuraCharacter,public IEnemyInterface
 {
 	GENERATED_BODY()
 	
@@ -22,8 +22,6 @@ public:
 	virtual void HighLight() override;
 	virtual void UnHighLight() override;
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 protected:
 	virtual void BeginPlay() override;

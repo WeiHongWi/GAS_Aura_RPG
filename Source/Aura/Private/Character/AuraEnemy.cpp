@@ -10,11 +10,11 @@ AAuraEnemy::AAuraEnemy()
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
-	AbilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystem");
+	AbilitySystemComp = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComp");
 	AbilitySystemComp->SetIsReplicated(true);
 	AbilitySystemComp->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
-	AttributeSet = CreateDefaultSubobject<UAttributeSet>("AttributeSet");
+	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
 
 void AAuraEnemy::HighLight()
@@ -32,10 +32,7 @@ void AAuraEnemy::UnHighLight()
 	Weapon->SetRenderCustomDepth(false);
 }
 
-UAbilitySystemComponent* AAuraEnemy::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComp;
-}
+
 
 void AAuraEnemy::BeginPlay()
 {
