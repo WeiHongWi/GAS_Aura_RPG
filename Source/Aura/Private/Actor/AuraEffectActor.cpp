@@ -38,3 +38,11 @@ void AAuraEffectActor::ApplyEffectOnTarget(AActor* Actor, TSubclassOf<UGameplayE
 
 }
 
+void AAuraEffectActor::OnOverlap(AActor* TargetActor)
+{
+}
+
+void AAuraEffectActor::EndOverlap(AActor* TargetActor)
+{
+}
+
