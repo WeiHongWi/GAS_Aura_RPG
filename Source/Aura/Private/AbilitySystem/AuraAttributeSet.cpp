@@ -82,6 +82,13 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	struct FEffectProperties EffectProperties;
 	SetEffectProperties(data, EffectProperties);
 	
+	if (data.EvaluatedData.Attribute == GetHealthAttribute()) {
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
+
+	if (data.EvaluatedData.Attribute == GetManaAttribute()) {
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+	}
 }
 
 
