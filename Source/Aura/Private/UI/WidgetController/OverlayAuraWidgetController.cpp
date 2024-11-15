@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/OverlayAuraWidgetController.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 void UOverlayAuraWidgetController::BroadcastInitValue()
 {
@@ -20,36 +21,45 @@ void UOverlayAuraWidgetController::BindCallbacksToDependencies()
 	
 
 	AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute())
-		.AddUObject(this, &UOverlayAuraWidgetController::HealthChange);
+		.AddLambda(
+			[this](const FOnAttributeChangeData& data) {
+				OnHealthChange.Broadcast(data.NewValue);
+			}
+		);
 
 	AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(AuraAS->GetMaxHealthAttribute())
-		.AddUObject(this, &UOverlayAuraWidgetController::MaxHealthChange);
+		.AddLambda(
+			[this](const FOnAttributeChangeData& data) {
+				OnMaxHealthChange.Broadcast(data.NewValue);
+			}
+		);
 
 	AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(AuraAS->GetManaAttribute())
-		.AddUObject(this, &UOverlayAuraWidgetController::ManaChange);
+		.AddLambda(
+			[this](const FOnAttributeChangeData& data) {
+				OnManaChange.Broadcast(data.NewValue);
+			});
 
 	AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(AuraAS->GetMaxManaAttribute())
-		.AddUObject(this, &UOverlayAuraWidgetController::MaxManaChange);
+		.AddLambda(
+			[this](const FOnAttributeChangeData& data) {
+				OnMaxManaChange.Broadcast(data.NewValue);
+			});;
+
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComp)->EffectTags.AddLambda(
+		[this](const FGameplayTagContainer& EffectTag){
+			for (const FGameplayTag& Tag : EffectTag) {
+				FGameplayTag Req_Tag = FGameplayTag::RequestGameplayTag(FName("Message"));
+				if (Tag.MatchesTag(Req_Tag)) {
+					const FUIWidgetRow* Row = GetDatatableRowByTag<FUIWidgetRow>(WidgetDT, Tag);
+					MessageWidgetDelegate.Broadcast(*Row);
+				}
+			}
+		}
+
+	);
 }
 
-void UOverlayAuraWidgetController::HealthChange(const FOnAttributeChangeData& data) const
-{
-	OnHealthChange.Broadcast(data.NewValue);
-}
 
-void UOverlayAuraWidgetController::MaxHealthChange(const FOnAttributeChangeData& data) const
-{
-	OnMaxHealthChange.Broadcast(data.NewValue);
-}
-
-void UOverlayAuraWidgetController::ManaChange(const FOnAttributeChangeData& data) const
-{
-	OnManaChange.Broadcast(data.NewValue);
-}
-
-void UOverlayAuraWidgetController::MaxManaChange(const FOnAttributeChangeData& data) const
-{
-	OnMaxManaChange.Broadcast(data.NewValue);
-}
 
 

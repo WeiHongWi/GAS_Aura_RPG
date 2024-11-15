@@ -19,6 +19,10 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComp;
 }
 
+void AAuraCharacterBase::InitActorInfo()
+{
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {
