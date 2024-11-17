@@ -22,9 +22,12 @@ public:
 	virtual void HighLight() override;
 	virtual void UnHighLight() override;
 
-
+	virtual int32 GetPlayerLevel() override;
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitActorInfo() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Default")
+	int32 level;
 };

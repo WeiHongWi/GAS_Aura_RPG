@@ -2,6 +2,7 @@
 
 
 #include "Character/AuraCharacterBase.h"
+#include "AbilitySystemComponent.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
@@ -22,6 +23,30 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 void AAuraCharacterBase::InitActorInfo()
 {
 }
+
+void AAuraCharacterBase::ApplyDefaultAttribute(TSubclassOf<UGameplayEffect> DefaultAttribute, float level)
+{
+	check(IsValid(GetAbilitySystemComponent()));
+	check(DefaultAttribute);
+
+	FGameplayEffectContextHandle ContextHandle =
+		GetAbilitySystemComponent()->MakeEffectContext();
+
+	ContextHandle.AddSourceObject(this);
+
+	const FGameplayEffectSpecHandle SpecHandle =
+		GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultAttribute, 1.f, ContextHandle);
+
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void AAuraCharacterBase::InitDefaultAttributes()
+{
+	ApplyDefaultAttribute(DefaultPrimaryAttribute, 1.f);
+	ApplyDefaultAttribute(DefaultSecondaryAttribute, 1.f);
+}
+
+
 
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
