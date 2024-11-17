@@ -44,6 +44,7 @@ void AAuraCharacterBase::InitDefaultAttributes()
 {
 	ApplyDefaultAttribute(DefaultPrimaryAttribute, 1.f);
 	ApplyDefaultAttribute(DefaultSecondaryAttribute, 1.f);
+	ApplyDefaultAttribute(DefaultVitalAttribute, 1.f);
 }
 
 
