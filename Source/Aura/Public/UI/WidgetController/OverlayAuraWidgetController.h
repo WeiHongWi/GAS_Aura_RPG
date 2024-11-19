@@ -57,19 +57,13 @@ public:
 	FOnAttributeChangeSignature OnHealthChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangeSignature OnMaxHealthChange;
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
 	FOnAttributeChangeSignature OnManaChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
+	FOnAttributeChangeSignature OnMaxHealthChange;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
 	FOnAttributeChangeSignature OnMaxManaChange;
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangeSignature OnGhostHealthChange;
-
-	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
-	FOnAttributeChangeSignature OnGhostManaChange;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
 	FMessageWidgetSignature MessageWidgetDelegate;

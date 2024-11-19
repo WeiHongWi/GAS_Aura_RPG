@@ -43,6 +43,8 @@ struct FEffectProperties {
 	
 };
 
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
 UCLASS()
 class AURA_API UAuraAttributeSet : public UAttributeSet
@@ -54,6 +56,8 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute,float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& data) override;
 	
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttribute;
+
 	//Primary Attributes
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "Primary Attributes")
 	FGameplayAttributeData Strength;

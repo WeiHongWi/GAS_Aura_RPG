@@ -4,6 +4,7 @@
 #include "UI/HUD/AuraHUD.h"
 #include "UnrealWidgetFwd.h"
 #include "UI/Widget/AuraUserWidget.h"
+#include "UI/WidgetController/AttributeWidgetController.h"
 #include "UI/WidgetController/OverlayAuraWidgetController.h"
 
 UOverlayAuraWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetControllerParams& WCParams)
@@ -19,6 +20,18 @@ UOverlayAuraWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidget
 	return OverlayWidgetController;
 }
 
+UAttributeWidgetController* AAuraHUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (AttributeWidgetController == nullptr) {
+		AttributeWidgetController = NewObject<UAttributeWidgetController>(this, AttributeWidgetControllerClass);
+		AttributeWidgetController->SetWidgetController(WCParams);
+		AttributeWidgetController->BindCallbacksToDependencies();
+
+		return AttributeWidgetController;
+	}
+
+	return AttributeWidgetController;
+}
 void AAuraHUD::InitOverlay(APlayerState* PS, APlayerController* PC, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
 	checkf(OverlayWidgetClass, TEXT("OverlayWidgetClass is uninitialized,please check AuraHUD."));

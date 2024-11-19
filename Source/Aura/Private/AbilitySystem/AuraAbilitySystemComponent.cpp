@@ -5,10 +5,19 @@
 
 
 
-
 void UAuraAbilitySystemComponent::AbilitySetInfo()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::EffectApplied);
+
+}
+
+void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpAbilities)
+{
+	for (auto GameplayAbility : StartUpAbilities) {
+		FGameplayAbilitySpec GameplayAbilitySpec = FGameplayAbilitySpec(GameplayAbility, 1);
+		//GiveAbility(GameplayAbilitySpec);
+		GiveAbilityAndActivateOnce(GameplayAbilitySpec);
+	}
 }
 
 void UAuraAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& GameplayEffectSpec, FActiveGameplayEffectHandle GameplayEffectHandle)
