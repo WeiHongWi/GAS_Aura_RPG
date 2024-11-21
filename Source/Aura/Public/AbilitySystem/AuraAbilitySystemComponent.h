@@ -23,8 +23,12 @@ public:
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpAbilities);
 
+	void AbilityTagHeld(const FGameplayTag& Tag);
+	void AbilityTagRelease(const FGameplayTag& Tag);
+
 protected:
-	void EffectApplied(UAbilitySystemComponent* ASC
+	UFUNCTION(Client,Reliable)
+	void ClientEffectApplied(UAbilitySystemComponent* ASC
 					   , const FGameplayEffectSpec& GameplayEffectSpec
 					   , FActiveGameplayEffectHandle GameplayEffectHandle);
 	

@@ -25,6 +25,12 @@ void AAuraCharacterBase::InitActorInfo()
 {
 }
 
+FVector AAuraCharacterBase::GetPartSocketLocation()
+{
+	check(Weapon);
+	return Weapon->GetSocketLocation(WeaponTip);
+}
+
 void AAuraCharacterBase::ApplyDefaultAttribute(TSubclassOf<UGameplayEffect> DefaultAttribute, float level)
 {
 	check(IsValid(GetAbilitySystemComponent()));

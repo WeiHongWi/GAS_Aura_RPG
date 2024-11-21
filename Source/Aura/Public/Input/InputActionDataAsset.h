@@ -33,6 +33,6 @@ public:
 	const UInputAction* FindAbilityInputActionInfo(const FGameplayTag& GameplayTag, bool bLogFound);
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
-	TArray<struct FAuraInputAction> AbilityInputAction;
+	TArray<FAuraInputAction> AbilityInputAction;
 	
 };
