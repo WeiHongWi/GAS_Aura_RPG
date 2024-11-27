@@ -29,15 +29,12 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHandleDeath();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 	virtual UAnimMontage* GetHitReactAnimMontage_Implementation() override;
 
 	virtual void Die() override;
-
-	
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -60,8 +57,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultVitalAttribute;
 
-	
-
 	virtual void InitActorInfo();
 
 	virtual FVector GetPartSocketLocation() override;
@@ -71,11 +66,25 @@ protected:
 	virtual void InitDefaultAttributes();
 
 	void AddCharacterAbilities();
+
+	void Disslove();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissloveEvent(UMaterialInstanceDynamic* MI);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartWeaponDissloveEvent(UMaterialInstanceDynamic* MI);
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray < TSubclassOf < UGameplayAbility >> StartUpAbilities;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> AnimMontage;
+
+	UPROPERTY(EditAnywhere,Category = "Material")
+	TObjectPtr<UMaterialInstance> DynamicMaterialDisslove;
+
+	UPROPERTY(EditAnywhere, Category = "Material")
+	TObjectPtr<UMaterialInstance> DynamicMaterialWeaponDisslove;
 
 };

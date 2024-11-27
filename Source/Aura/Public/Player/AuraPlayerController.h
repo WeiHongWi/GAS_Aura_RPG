@@ -15,6 +15,7 @@ class IEnemyInterface;
 class UInputActionDataAsset;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
+class UDamageWidgetComponent;
 /**
  * 
  */
@@ -47,11 +48,14 @@ public:
 	AAuraPlayerController();
 
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
-
 private:
 	void AbilityTagPress(FGameplayTag GameplayTag);
 	void AbilityTagRelease(FGameplayTag GameplayTag);
@@ -77,6 +81,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
 
-	void AutoRun();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageWidgetComponent> DamageWidgetCompClass;
 
+	void AutoRun();
 };

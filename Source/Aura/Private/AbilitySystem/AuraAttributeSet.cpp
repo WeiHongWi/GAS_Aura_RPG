@@ -10,6 +10,8 @@
 #include "Aura/Aura.h"
 #include "AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
+#include "Player/AuraPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -117,7 +119,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 {
 	// ~Begin source
 	Props.EffectContextHandle = data.EffectSpec.GetContext();
-	Props.ASCSource = Props.EffectContextHandle.GetInstigatorAbilitySystemComponent();
+	Props.ASCSource = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
 	if (IsValid(Props.ASCSource) && Props.ASCSource->AbilityActorInfo.IsValid()
 		&& Props.ASCSource->AbilityActorInfo->AvatarActor.IsValid()) {
@@ -181,6 +183,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
 				if (CombatInterface) {
 					CombatInterface->Die();
+				}
+			}
+			//Call the damage text widget to it.
+			
+			if (EffectProperties.SourceCharacter != EffectProperties.TargetCharacter) {
+				if (AAuraPlayerController* PC = Cast<AAuraPlayerController>
+					(UGameplayStatics::GetPlayerController(EffectProperties.SourceCharacter,0))){
+					PC->ShowDamageNumber(LocalIncomingDamage, EffectProperties.TargetCharacter);
 				}
 			}
 		}

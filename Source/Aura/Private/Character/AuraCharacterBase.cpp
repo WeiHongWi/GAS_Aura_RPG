@@ -76,6 +76,7 @@ void AAuraCharacterBase::AddCharacterAbilities()
 
 
 
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {
@@ -106,6 +107,20 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Disslove();
 }
 
-
+void AAuraCharacterBase::Disslove()
+{
+	if (IsValid(DynamicMaterialDisslove)) {
+		UMaterialInstanceDynamic* Material = UMaterialInstanceDynamic::Create(DynamicMaterialDisslove, this);
+		GetMesh()->SetMaterial(0, Material);
+		StartDissloveEvent(Material);
+	}
+	
+	if (IsValid(DynamicMaterialWeaponDisslove)) {
+		UMaterialInstanceDynamic* Material_Weapon = UMaterialInstanceDynamic::Create(DynamicMaterialWeaponDisslove, this);
+		Weapon->SetMaterial(0, Material_Weapon);
+		StartWeaponDissloveEvent(Material_Weapon);
+	}
+}
