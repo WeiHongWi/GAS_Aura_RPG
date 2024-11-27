@@ -7,3 +7,4 @@
 #define CUSTOM_DEPTH_RED 250
 #define INIT_PLAYER_HEALTH 50
 #define INIT_PLAYER_MANA 50
+#define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1

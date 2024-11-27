@@ -76,6 +76,8 @@ void AAuraPlayerController::SetupInputComponent()
 
 	UAuraInputComponent* AuraInputComp = CastChecked<UAuraInputComponent>(InputComponent);
 	AuraInputComp->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	AuraInputComp->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPress);
+	AuraInputComp->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftRelease);
 	AuraInputComp->BindAbilityActions(InputConfig, this, 
 		             &AAuraPlayerController::AbilityTagPress, 
 					 &AAuraPlayerController::AbilityTagRelease,
@@ -97,26 +99,22 @@ void AAuraPlayerController::AbilityTagRelease(FGameplayTag GameplayTag)
 			GetASC()->AbilityTagRelease(GameplayTag);
 		}
 	}
+	if (GetASC()) GetASC()->AbilityTagRelease(GameplayTag);
 
-	if (bIsTargeting) {
-		if (GetASC()) {
-			GetASC()->AbilityTagRelease(GameplayTag);
-		}
-	}
-	else {
+	if (!bIsTargeting && !bIsShiftPress) {
 		APawn* ControllerRef = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControllerRef) {
 			FVector PathStart = ControllerRef->GetActorLocation();
-			if (UNavigationPath* Path = 
-				UNavigationSystemV1::FindPathToLocationSynchronously(this,PathStart, CachedDestination)) {
-				
+			if (UNavigationPath* Path =
+				UNavigationSystemV1::FindPathToLocationSynchronously(this, PathStart, CachedDestination)) {
+
 				Spline->ClearSplinePoints();
 				for (const FVector& point : Path->PathPoints) {
 					Spline->AddSplinePoint(point, ESplineCoordinateSpace::World);
 				}
 				CachedDestination = Path->PathPoints[Path->PathPoints.Num() - 1];
 				bAutoRunning = true;
-			}	
+			}
 		}
 		FollowTime = 0.f;
 		bIsTargeting = false;
@@ -130,7 +128,7 @@ void AAuraPlayerController::AbilityTagHeld(FGameplayTag GameplayTag)
 			GetASC()->AbilityTagHeld(GameplayTag);
 		}
 	}
-	if (bIsTargeting) {
+	if (bIsTargeting || bIsShiftPress) {
 		if (GetASC()) {
 			GetASC()->AbilityTagHeld(GameplayTag);
 		}
@@ -157,6 +155,16 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetASC()
 		));
 	}
 	return AuraAbilitySystemComp;
+}
+
+void AAuraPlayerController::ShiftPress()
+{
+	bIsShiftPress = true;
+}
+
+void AAuraPlayerController::ShiftRelease()
+{
+	bIsShiftPress = false;
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& ActionValue)

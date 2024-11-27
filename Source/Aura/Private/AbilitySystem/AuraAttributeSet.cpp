@@ -9,6 +9,8 @@
 #include <Net/UnrealNetwork.h>
 #include "Aura/Aura.h"
 #include "AuraGameplayTags.h"
+#include "Interaction/CombatInterface.h"
+
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -160,6 +162,28 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 	if (data.EvaluatedData.Attribute == GetManaAttribute()) {
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+	}
+
+	if (data.EvaluatedData.Attribute == GetIncoming_DamageAttribute()) {
+		const float LocalIncomingDamage = GetIncoming_Damage();
+		SetIncoming_Damage(0.f);
+		if (LocalIncomingDamage > 0.f) {
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+			
+			const bool bFatal = NewHealth <= 0.f;
+			if (!bFatal) {
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().HitReact);
+				EffectProperties.ASCTarget->TryActivateAbilitiesByTag(TagContainer);
+			}
+			else {
+				ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
+				if (CombatInterface) {
+					CombatInterface->Die();
+				}
+			}
+		}
 	}
 }
 

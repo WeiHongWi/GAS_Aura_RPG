@@ -100,4 +100,16 @@ void FAuraGameplayTags::InitialGameplayTags()
 		FName("InputTag.4"),
 		FString("Input Tag for key 4")
 	);
+
+	// Meta Attribute
+	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage"),
+		FString("Tag for calculating damage")
+	);
+
+	//Common Ability 
+	GameplayTags.HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.HitReact"),
+		FString("Tag for enemy react by hitting")
+	);
 }

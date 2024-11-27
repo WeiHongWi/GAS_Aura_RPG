@@ -29,6 +29,13 @@ class AURA_API AAuraPlayerController : public APlayerController
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere,Category="Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
+	void ShiftPress();
+	void ShiftRelease();
+	bool bIsShiftPress = false;
+
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
 	FHitResult CursorHit;
