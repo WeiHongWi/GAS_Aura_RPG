@@ -83,3 +83,14 @@ void UAuraAbilitySystemLibrary::InitializeDefualtGameplayAbility(const UObject* 
 		ASC->GiveAbility(AbilitySpec);
 	}
 }
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObeject)
+{
+	AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObeject));
+	if (!GameMode) {
+		return nullptr;
+	}
+
+	UCharacterClassInfo* CharacterInfo = GameMode->CharacterClassInfo;
+	return CharacterInfo;
+}
