@@ -11,6 +11,7 @@
 #include "Aura/Aura.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Aura/Public/AbilitySystem/AuraAbilitySystemLibrary.h"
 
 // Sets default values
 AAuraProjectileActor::AAuraProjectileActor()
@@ -45,10 +46,22 @@ void AAuraProjectileActor::BeginPlay()
 
 void AAuraProjectileActor::OnSphereOvelap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UGameplayStatics::PlaySoundAtLocation(this, SoundEffect, GetActorLocation(), FRotator::ZeroRotator);
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-	LoopingSoundComponent->Stop();
+	if (EffectSpec.Data.IsValid() && 
+		EffectSpec.Data->GetContext().GetEffectCauser() == OtherActor) {
+		return;
+	}
+	
+	if (UAuraAbilitySystemLibrary::IsFriend(EffectSpec.Data.Get()->GetEffectContext().GetEffectCauser(), OtherActor)) {
+		return;
+	}
 
+	if (!bHit){
+		UGameplayStatics::PlaySoundAtLocation(this, SoundEffect, GetActorLocation(), FRotator::ZeroRotator);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+		if (LoopingSoundComponent) {
+			LoopingSoundComponent->Stop();
+		}
+	}
 	if (HasAuthority()) {
 		if (UAbilitySystemComponent* TargetASC = 
 			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor)){
@@ -66,7 +79,9 @@ void AAuraProjectileActor::Destroyed()
 	if (!bHit && !HasAuthority()){
 		UGameplayStatics::PlaySoundAtLocation(this, SoundEffect, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		LoopingSoundComponent->Stop();
+		if (LoopingSoundComponent) {
+			LoopingSoundComponent->Stop();
+		}
 	}
 	Super::Destroyed();
 }

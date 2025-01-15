@@ -29,18 +29,36 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHandleDeath();
 
-	virtual UAnimMontage* GetHitReactAnimMontage_Implementation() override;
+	//Combat Interface Begin
 
+	virtual UAnimMontage* GetHitReactAnimMontage_Implementation() override;
 	virtual void Die() override;
+	virtual FVector GetWeaponTipSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
+	virtual bool bIsDead_Implementation() const override;
+	virtual AActor* GetAvatarActor_Implementation() override;
+	virtual TArray<FTagMontage> GetAttackMontages_Implementation() override;
+
+	//Combat Interface End
+
+	bool IsDead = false;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FTagMontage> AttackMontages;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditAnywhere,Category="Combat")
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTip;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName LeftHand;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName RightHand;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComp;

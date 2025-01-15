@@ -38,11 +38,30 @@ public:
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 
-	FGameplayTag Damage;
+	//Attribute resistance for damage type
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Lightning;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Physics;
 
+	//Damage and Damage Types
+	FGameplayTag Damage;
+	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Lightning;
+	FGameplayTag Damage_Arcane;
+	FGameplayTag Damage_Physics;
+
+	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
 	//Common Ability
 	FGameplayTag HitReact;
 
+	//Melee
+	FGameplayTag Abilities_Attack;
+
+	//Weapon Types
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RightHand;
+	FGameplayTag Montage_Attack_LeftHand;
 
 protected:
 

@@ -14,6 +14,8 @@
  * 
  */
 class UWidgetComponent;
+class UBehaviorTree;
+class AAuraAIController;
 
 UCLASS()
 class AURA_API AAuraEnemy : public AAuraCharacter,public IEnemyInterface
@@ -22,9 +24,14 @@ class AURA_API AAuraEnemy : public AAuraCharacter,public IEnemyInterface
 	
 public:
 	AAuraEnemy();
+	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void HighLight() override;
 	virtual void UnHighLight() override;
+
+	virtual AActor* GetCombatTarget_Implementation() override;
+
+	virtual void SetCombatTarget_Implementation(AActor* CombatTarget) override;
 
 	virtual int32 GetPlayerLevel() override;
 
@@ -42,6 +49,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
 protected:
 	virtual void BeginPlay() override;
 
@@ -59,5 +69,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> EnemyAIController;
 
 };

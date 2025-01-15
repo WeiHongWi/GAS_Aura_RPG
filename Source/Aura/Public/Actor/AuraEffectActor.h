@@ -48,6 +48,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effect")
 	bool bDestryOnEffectRemoval = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Applied Effect")
+	bool bApplyOnEnemy = false;
+
 	UPROPERTY(EditAnywhere,BlueprintReadOnly, Category = "Applied Effect")
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 

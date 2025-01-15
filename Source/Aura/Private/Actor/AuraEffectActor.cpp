@@ -23,6 +23,10 @@ void AAuraEffectActor::BeginPlay()
 
 void AAuraEffectActor::ApplyEffectOnTarget(AActor* Actor, TSubclassOf<UGameplayEffect> GEffectClass)
 {
+	bool bIsEnemy = Actor->ActorHasTag(FName("Enemy"));
+	if (bIsEnemy && !bApplyOnEnemy) {
+		return;
+	}
 	IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Actor);
 	if (!ASCInterface) {
 		return;
@@ -41,6 +45,11 @@ void AAuraEffectActor::ApplyEffectOnTarget(AActor* Actor, TSubclassOf<UGameplayE
 
 	if (bIsInfinite && InfiniteGameplayEffectRemovePolicy == EEffectRemovePolicy::RemoveEndOverlap) {
 		ActiveEffectHandles.Add(ActiveEffectHandle, ASC);
+	}
+
+	if (bDestryOnEffectRemoval &&
+		EffectSpecHandle.Data.Get()->Def.Get()->DurationPolicy == EGameplayEffectDurationType::Instant) {
+		Destroy();
 	}
 }
 

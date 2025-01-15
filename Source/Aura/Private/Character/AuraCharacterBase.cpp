@@ -7,6 +7,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Aura/Aura.h"
+#include "AuraGameplayTags.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
@@ -95,6 +96,37 @@ void AAuraCharacterBase::Die()
 	MulticastHandleDeath();
 }
 
+FVector AAuraCharacterBase::GetWeaponTipSocketLocation_Implementation(const FGameplayTag& MontageTag)
+{
+	FAuraGameplayTags AuraTag = FAuraGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(AuraTag.Montage_Attack_Weapon)) {
+		return Weapon->GetSocketLocation(WeaponTip);
+	}
+	else if (MontageTag.MatchesTagExact(AuraTag.Montage_Attack_LeftHand)) {
+		return GetMesh()->GetSocketLocation(LeftHand);
+	}
+	else if (MontageTag.MatchesTagExact(AuraTag.Montage_Attack_RightHand)){
+		return GetMesh()->GetSocketLocation(RightHand);
+	}
+
+	return FVector();
+}
+
+bool AAuraCharacterBase::bIsDead_Implementation() const
+{
+	return IsDead;
+}
+
+AActor* AAuraCharacterBase::GetAvatarActor_Implementation()
+{
+	return this;
+}
+
+TArray<FTagMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
 	Weapon->SetSimulatePhysics(true);
@@ -108,6 +140,7 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Disslove();
+	IsDead = true;
 }
 
 void AAuraCharacterBase::Disslove()
