@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Aura/Aura.h"
 #include "AuraGameplayTags.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
@@ -99,14 +100,17 @@ void AAuraCharacterBase::Die()
 FVector AAuraCharacterBase::GetWeaponTipSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
 	FAuraGameplayTags AuraTag = FAuraGameplayTags::Get();
-	if (MontageTag.MatchesTagExact(AuraTag.Montage_Attack_Weapon)) {
+	if (MontageTag.MatchesTagExact(AuraTag.CombatSocket_Weapon)) {
 		return Weapon->GetSocketLocation(WeaponTip);
 	}
-	else if (MontageTag.MatchesTagExact(AuraTag.Montage_Attack_LeftHand)) {
+	if (MontageTag.MatchesTagExact(AuraTag.CombatSocket_LeftHand)) {
 		return GetMesh()->GetSocketLocation(LeftHand);
 	}
-	else if (MontageTag.MatchesTagExact(AuraTag.Montage_Attack_RightHand)){
+	if (MontageTag.MatchesTagExact(AuraTag.CombatSocket_RightHand)){
 		return GetMesh()->GetSocketLocation(RightHand);
+	}
+	if (MontageTag.MatchesTagExact(AuraTag.CombatSocket_Tail)) {
+		return GetMesh()->GetSocketLocation(TailSocket);
 	}
 
 	return FVector();
@@ -127,8 +131,34 @@ TArray<FTagMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
 	return AttackMontages;
 }
 
+UNiagaraSystem* AAuraCharacterBase::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
+}
+
+FTagMontage AAuraCharacterBase::GetTagMontageByTag_Implementation(const FGameplayTag& MontageTag)
+{
+	for (FTagMontage Tag : AttackMontages) {
+		if (Tag.MontageTag == MontageTag) {
+			return Tag;
+		}
+	}
+	return FTagMontage();
+}
+
+int AAuraCharacterBase::GetMinionCount_Implementation()
+{
+	return MinionCount;
+}
+
+void AAuraCharacterBase::IncreaseMinionCount_Implementation(int NumOfMinions)
+{
+	MinionCount += NumOfMinions;
+}
+
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);

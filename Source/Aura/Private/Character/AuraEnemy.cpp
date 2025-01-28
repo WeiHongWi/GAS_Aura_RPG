@@ -145,5 +145,8 @@ void AAuraEnemy::InitDefaultAttributes()
 void AAuraEnemy::Die()
 {
 	SetLifeSpan(LifeSpan);
+	if (EnemyAIController) {
+		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
+	}
 	Super::Die();
 }

@@ -47,11 +47,13 @@ void AAuraProjectileActor::BeginPlay()
 void AAuraProjectileActor::OnSphereOvelap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (EffectSpec.Data.IsValid() && 
-		EffectSpec.Data->GetContext().GetEffectCauser() == OtherActor) {
+		EffectSpec.Data.Get()->GetContext().GetEffectCauser() == OtherActor) {
 		return;
 	}
 	
-	if (UAuraAbilitySystemLibrary::IsFriend(EffectSpec.Data.Get()->GetEffectContext().GetEffectCauser(), OtherActor)) {
+	AActor* PlayerToEnemy = Cast<AActor>(GetInstigator());
+
+	if (IsValid(PlayerToEnemy) && UAuraAbilitySystemLibrary::IsFriend(PlayerToEnemy, OtherActor)) {
 		return;
 	}
 
@@ -61,6 +63,7 @@ void AAuraProjectileActor::OnSphereOvelap(UPrimitiveComponent* OverlappedCompone
 		if (LoopingSoundComponent) {
 			LoopingSoundComponent->Stop();
 		}
+		bHit = true;
 	}
 	if (HasAuthority()) {
 		if (UAbilitySystemComponent* TargetASC = 
@@ -82,6 +85,7 @@ void AAuraProjectileActor::Destroyed()
 		if (LoopingSoundComponent) {
 			LoopingSoundComponent->Stop();
 		}
+		bHit = true;
 	}
 	Super::Destroyed();
 }

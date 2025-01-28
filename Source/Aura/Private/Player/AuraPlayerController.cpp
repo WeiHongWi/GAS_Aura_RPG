@@ -50,13 +50,17 @@ void AAuraPlayerController::AutoRun()
 	if (!bAutoRunning) return;
 
 	if (APawn* ControllerRef = GetPawn()) {
-		const FVector LocationSpline = Spline->FindLocationClosestToWorldLocation(ControllerRef->GetActorLocation(),
-			ESplineCoordinateSpace::World);
-		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationSpline,
-			ESplineCoordinateSpace::World);
+		const FVector LocationSpline = Spline->FindLocationClosestToWorldLocation(
+			ControllerRef->GetActorLocation(),
+			ESplineCoordinateSpace::World
+		);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(
+			LocationSpline,
+			ESplineCoordinateSpace::World
+		);
 		ControllerRef->AddMovementInput(Direction);
 
-		const float Distance = (CachedDestination - LocationSpline).Length();
+		const float Distance = (LocationSpline - CachedDestination).Length();
 		if (Distance <= AutoRunningAcceptRadius) {
 			bAutoRunning = false;
 		}
@@ -118,12 +122,14 @@ void AAuraPlayerController::AbilityTagRelease(FGameplayTag GameplayTag)
 	if (GetASC()) GetASC()->AbilityTagRelease(GameplayTag);
 
 	if (!bIsTargeting && !bIsShiftPress) {
+		
 		APawn* ControllerRef = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControllerRef) {
 			FVector PathStart = ControllerRef->GetActorLocation();
+			UE_LOG(LogTemp, Warning, TEXT("I am so good %f,%f,%f"),CachedDestination.X, CachedDestination.Y, CachedDestination.Z )
 			if (UNavigationPath* Path =
 				UNavigationSystemV1::FindPathToLocationSynchronously(this, PathStart, CachedDestination)) {
-
+				
 				Spline->ClearSplinePoints();
 				for (const FVector& point : Path->PathPoints) {
 					Spline->AddSplinePoint(point, ESplineCoordinateSpace::World);
@@ -155,6 +161,7 @@ void AAuraPlayerController::AbilityTagHeld(FGameplayTag GameplayTag)
 	else {
 		FollowTime += GetWorld()->GetDeltaSeconds();
 
+		FHitResult Hit;
 		if (CursorHit.bBlockingHit) {
 			CachedDestination = CursorHit.ImpactPoint;
 		}

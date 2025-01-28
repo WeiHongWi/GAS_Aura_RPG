@@ -9,8 +9,10 @@
 /**
  * 
  */
+struct FAuraAbilityInfo;
 class UAuraUserWidget;
-
+class UAbilityInfo;
+class UAuraAbilitySystemComponent;
 
 USTRUCT(BlueprintType)
 struct FUIWidgetRow : public FTableRowBase {
@@ -40,6 +42,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FUIWidgetRow,Row
 );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FAbilityInfoSignature
+	,const FAuraAbilityInfo&,
+	Info
+);
 
 
 
@@ -68,13 +75,21 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
 	FMessageWidgetSignature MessageWidgetDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
 protected:
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Value")
 	TObjectPtr<UDataTable> WidgetDT;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Info")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
 
 	template<typename T>
 	T* GetDatatableRowByTag(TObjectPtr<UDataTable> datatable, const FGameplayTag& Tag);
+
+	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent);
+
 };
 
 template<typename T>

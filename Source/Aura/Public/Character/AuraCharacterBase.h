@@ -13,6 +13,7 @@ class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
 class UAnimMontage;
+class UNiagaraSystem;
 
 UCLASS()
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -37,7 +38,10 @@ public:
 	virtual bool bIsDead_Implementation() const override;
 	virtual AActor* GetAvatarActor_Implementation() override;
 	virtual TArray<FTagMontage> GetAttackMontages_Implementation() override;
-
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual FTagMontage GetTagMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
+	virtual int GetMinionCount_Implementation() override;
+	virtual void IncreaseMinionCount_Implementation(int NumOfMinions) override;
 	//Combat Interface End
 
 	bool IsDead = false;
@@ -59,6 +63,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName RightHand;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName TailSocket;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComp;
@@ -92,6 +99,14 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartWeaponDissloveEvent(UMaterialInstanceDynamic* MI);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	UNiagaraSystem* BloodEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	USoundBase* DeathSound;
+
+	int MinionCount = 0;
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray < TSubclassOf < UGameplayAbility >> StartUpAbilities;
