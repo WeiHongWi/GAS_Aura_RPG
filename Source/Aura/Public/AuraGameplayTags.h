@@ -44,6 +44,9 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physics;
 
+	//Meta Attributes 
+	FGameplayTag Attributes_Meta_IncomingEXP;
+
 	//Damage and Damage Types
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;
@@ -59,6 +62,7 @@ public:
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
 	FGameplayTag Abilities_Fire_Firebolt;
+	FGameplayTag Cooldown_Fire_Firebolt;
 
 	//Combat
 	FGameplayTag CombatSocket_Weapon;

@@ -33,7 +33,7 @@ public:
 
 	virtual void SetCombatTarget_Implementation(AActor* CombatTarget) override;
 
-	virtual int32 GetPlayerLevel() override;
+	virtual int32 GetPlayerLevel_Implementation() override;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangeSignature OnHealthChange;
@@ -63,9 +63,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Default")
 	int32 level;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Default")
-	ECharacterClass CharacterClass;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> HealthBar;

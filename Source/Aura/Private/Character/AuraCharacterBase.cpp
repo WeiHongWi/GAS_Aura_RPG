@@ -74,6 +74,7 @@ void AAuraCharacterBase::AddCharacterAbilities()
 	}
 
 	AuraASC->AddCharacterAbilities(StartUpAbilities);
+	AuraASC->AddCharacterPassiveAbilities(StartUpPassiveAbilities);
 }
 
 
@@ -186,4 +187,9 @@ void AAuraCharacterBase::Disslove()
 		Weapon->SetMaterial(0, Material_Weapon);
 		StartWeaponDissloveEvent(Material_Weapon);
 	}
+}
+
+ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
 }

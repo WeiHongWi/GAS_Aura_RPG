@@ -83,8 +83,16 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
-	ICombatInterface* SrcCombatInterface = Cast<ICombatInterface>(SourceAvatar);
-	ICombatInterface* TarCombatInterface = Cast<ICombatInterface>(TargetAvatar);
+	int32 SourcePlayerLevel = 1;
+	if (SourceAvatar->Implements<UCombatInterface>())
+	{
+		SourcePlayerLevel = ICombatInterface::Execute_GetPlayerLevel(SourceAvatar);
+	}
+	int32 TargetPlayerLevel = 1;
+	if (TargetAvatar->Implements<UCombatInterface>())
+	{
+		TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
+	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
@@ -128,11 +136,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// Damage Coefficient
 	UCharacterClassInfo* CharacterClassInfo = UAuraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 	FRealCurve* RealCurve = CharacterClassInfo->DamageCoefficientTable->FindCurve(FName("SourceArmorPenetration"), FString());
-	float ArmorPenetrationCoefficient = RealCurve->Eval(SrcCombatInterface->GetPlayerLevel());
+	float ArmorPenetrationCoefficient = RealCurve->Eval(SourcePlayerLevel);
 
 	UCharacterClassInfo* CharacterClassInfo_T = UAuraAbilitySystemLibrary::GetCharacterClassInfo(TargetAvatar);
 	FRealCurve* RealCurve_T = CharacterClassInfo_T->DamageCoefficientTable->FindCurve(FName("EffectArmor"), FString());
-	float EffectArmorCoefficient = RealCurve_T->Eval(TarCombatInterface->GetPlayerLevel());
+	float EffectArmorCoefficient = RealCurve_T->Eval(TargetPlayerLevel);
 
 	float EffectArmor = TargetArmor *= (100 - SourceArmorPenetration* ArmorPenetrationCoefficient) / 100;
 	Damage *= (100 - EffectArmor* EffectArmorCoefficient) / 100;
@@ -140,7 +148,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	// Critical Hit : Resistance -> reduce chance of critical hit.
 	UCharacterClassInfo* CharacterClassInfo_TC = UAuraAbilitySystemLibrary::GetCharacterClassInfo(TargetAvatar);
 	FRealCurve* RealCurve_TC = CharacterClassInfo_TC->DamageCoefficientTable->FindCurve(FName("TargetCriticalHitResistance"), FString());
-	float CriticalHitResistanceCoefficient = RealCurve_TC->Eval(TarCombatInterface->GetPlayerLevel());
+	float CriticalHitResistanceCoefficient = RealCurve_TC->Eval(TargetPlayerLevel);
 	float TargetCritical_Hit_Resistance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().Critical_Hit_ResistanceDef, EvaluationParameters, TargetCritical_Hit_Resistance);
 	TargetCritical_Hit_Resistance = FMath::Max(0.f, TargetCritical_Hit_Resistance);

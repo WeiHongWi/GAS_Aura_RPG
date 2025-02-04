@@ -160,6 +160,12 @@ void FAuraGameplayTags::InitialGameplayTags()
 		FString("Tag for enemy react by hitting")
 	);
 
+	//Meta Attribute
+	GameplayTags.Attributes_Meta_IncomingEXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingEXP"),
+		FString("Incoming XP for meta attribute")
+	);
+
 	//Attack Ability
 	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Attack"),
@@ -173,9 +179,13 @@ void FAuraGameplayTags::InitialGameplayTags()
 
 	GameplayTags.Abilities_Fire_Firebolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Fire.Firebolt"),
-		FString("Tag for enemy's spell the firebolt")
+		FString("Tag for spell the firebolt")
 	);
 
+	GameplayTags.Abilities_Fire_Firebolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Cooldown.Fire.Firebolt"),
+		FString("Tag for cooldown of spelling the firebolt")
+	);
 	/*
 	* Combat Sockets
 	*/

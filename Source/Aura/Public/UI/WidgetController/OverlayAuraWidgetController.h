@@ -77,6 +77,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Messages")
 	FAbilityInfoSignature AbilityInfoDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Exp")
+	FOnAttributeChangeSignature OnXpPercentChangeDelegate;
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Value")
@@ -90,6 +93,7 @@ protected:
 
 	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent);
 
+	void OnExpChanged(int32 exp);
 };
 
 template<typename T>

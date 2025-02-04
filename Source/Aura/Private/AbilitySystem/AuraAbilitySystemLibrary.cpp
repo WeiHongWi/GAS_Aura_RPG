@@ -78,23 +78,35 @@ void UAuraAbilitySystemLibrary::InitializeDefualtGameplayAbility(const UObject* 
 	if (!GameMode) {
 		return;
 	}
-
 	UCharacterClassInfo* CharacterInfo = GameMode->CharacterClassInfo;
 	for (auto& AbilityClass : CharacterInfo->CommonAbilities) {
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		ASC->GiveAbility(AbilitySpec);
 	}
-
 	const FCharacterDefaultInfo DefaultInfo = CharacterInfo->GetCharacterDefaultInfo(Class);
 	
 	for (auto& StartupAbility : DefaultInfo.StartUpAbilities) {
-		if (ICombatInterface* CI = Cast<ICombatInterface>(ASC->GetAvatarActor())) {
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(StartupAbility, CI->GetPlayerLevel());
+		if (ASC->GetAvatarActor()->Implements<UCombatInterface>()) {
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(StartupAbility, ICombatInterface::Execute_GetPlayerLevel(ASC->GetAvatarActor()));
 			ASC->GiveAbility(AbilitySpec);
 		}
 	}
-	
 }
+
+int32 UAuraAbilitySystemLibrary::GetRewardExpForClassAndLevel(const UObject* WorldContextObeject, ECharacterClass CharacterClass, int32 level)
+{
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObeject);
+	if (CharacterClassInfo == nullptr) return 0;
+
+	//FScalableFloat curve  = CharacterClassInfo->CharacterInfo[CharacterClass].reward;
+
+	FCharacterDefaultInfo Info = CharacterClassInfo->GetCharacterDefaultInfo(CharacterClass);
+	FScalableFloat curve = Info.reward;
+	float exp = curve.GetValueAtLevel(level);
+
+	return static_cast<int32>(exp);
+}
+
 
 UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObeject)
 {
@@ -179,3 +191,4 @@ bool UAuraAbilitySystemLibrary::IsFriend(AActor* FirstActor, AActor* SecondActor
 
 	return PlayerFriend || EnemyFriend;
 }
+

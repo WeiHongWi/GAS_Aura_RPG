@@ -26,6 +26,14 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 	AbilityInfoDelegate.Broadcast(this);
 }
 
+void UAuraAbilitySystemComponent::AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpPassivepAbilities)
+{
+	for (auto GameplayAbility : StartUpPassivepAbilities) {
+		FGameplayAbilitySpec GASpec = FGameplayAbilitySpec(GameplayAbility, 1);
+		GiveAbilityAndActivateOnce(GASpec);
+	}
+}
+
 void UAuraAbilitySystemComponent::AbilityTagHeld(const FGameplayTag& Tag)
 {
 	if (!Tag.IsValid())return;

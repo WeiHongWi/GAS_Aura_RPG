@@ -13,6 +13,7 @@
 #include "Player/AuraPlayerController.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Interaction/PlayerInterface.h"
 
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -213,6 +214,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
 				if (CombatInterface) {
 					CombatInterface->Die();
+					SendEXPEvent(EffectProperties);
 				}
 			}
 			//Call the damage text widget to it.
@@ -221,6 +223,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			const bool bIsCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
 			ShowFloatingText(EffectProperties, LocalIncomingDamage, bIsBlockHit, bIsCriticalHit);
 			
+		}
+	}
+	if (data.EvaluatedData.Attribute == GetIncoming_ExpAttribute()) {
+		float Incoming_exp = GetIncoming_Exp();
+		SetIncoming_Exp(0.f);
+		
+		if (EffectProperties.SourceCharacter->Implements<UPlayerInterface>()) {
+			IPlayerInterface::Execute_AddToExp(EffectProperties.SourceCharacter,Incoming_exp);
 		}
 	}
 }
@@ -238,6 +248,29 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
+}
+
+void UAuraAttributeSet::SendEXPEvent(const FEffectProperties& Props)
+{
+	if (!Props.TargetCharacter->Implements<UCombatInterface>()) return;
+
+	const int32 level = ICombatInterface::Execute_GetPlayerLevel(Props.TargetCharacter);
+	const ECharacterClass CharacterClass = ICombatInterface::Execute_GetCharacterClass(Props.TargetCharacter);
+
+	int32 RewardEXP =
+		UAuraAbilitySystemLibrary::GetRewardExpForClassAndLevel(
+			Props.TargetCharacter,
+			CharacterClass,
+			level
+		);
+	const FAuraGameplayTags AuraTags = FAuraGameplayTags::Get();
+	FGameplayEventData Payload;
+	Payload.EventTag = AuraTags.Attributes_Meta_IncomingEXP;
+	Payload.EventMagnitude = RewardEXP;
+
+	FGameplayTag EventTag = AuraTags.Attributes_Meta_IncomingEXP;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, EventTag,Payload);
 }
 
 void UAuraAttributeSet::OnRep_Health(const struct FGameplayAttributeData& OldHealth) const

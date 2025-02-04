@@ -74,7 +74,7 @@ void AAuraEnemy::SetCombatTarget_Implementation(AActor* Target)
 	CombatTarget = Target;
 }
 
-int32 AAuraEnemy::GetPlayerLevel()
+int32 AAuraEnemy::GetPlayerLevel_Implementation()
 {
 	return level;
 }

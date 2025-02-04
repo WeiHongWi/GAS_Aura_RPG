@@ -18,6 +18,9 @@ struct FAuraAbilityInfo
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag = FGameplayTag();
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FGameplayTag CooldownTag = FGameplayTag();
+
 	//Background : Material Instance
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<const UMaterialInstance> Background = nullptr;

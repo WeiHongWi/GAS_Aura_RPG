@@ -27,6 +27,7 @@ public:
 	FAbilityInfo AbilityInfoDelegate;
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpAbilities);
+	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpPassivepAbilities);
 
 	void AbilityTagHeld(const FGameplayTag& Tag);
 	void AbilityTagRelease(const FGameplayTag& Tag);

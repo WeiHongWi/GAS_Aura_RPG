@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Interaction/CombatInterface.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "AuraCharacterBase.generated.h"
 
 class UAbilitySystemComponent;
@@ -49,8 +50,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTagMontage> AttackMontages;
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Character Class Default")
+	ECharacterClass CharacterClass;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -100,6 +106,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartWeaponDissloveEvent(UMaterialInstanceDynamic* MI);
 
+	virtual ECharacterClass GetCharacterClass_Implementation() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	UNiagaraSystem* BloodEffect;
 
@@ -110,6 +118,9 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray < TSubclassOf < UGameplayAbility >> StartUpAbilities;
+
+	UPROPERTY(EditAnywhere, Category = "Abilities")
+	TArray < TSubclassOf < UGameplayAbility >> StartUpPassiveAbilities;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> AnimMontage;
