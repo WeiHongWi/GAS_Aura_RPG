@@ -7,6 +7,10 @@
 #include "Interaction/PlayerInterface.h"
 #include "AuraCharacter.generated.h"
 
+
+class UNiagaraComponent;
+class UCameraComponent;
+class USpringArmComponent;
 /**
  * 
  */
@@ -20,10 +24,31 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	//Player Interface
+	virtual int32 GetExp_Implementation() const override;
 	virtual void AddToExp_Implementation(int32 exp) override;
-
+	virtual void LevelUp_Implementation() override;
+	virtual int32 FindLevelFromAmountOfExp_Implementation(int32 Exp) const override;
+	virtual int32 GetAttributePointsReward_Implementation(int32 Level) const override;
+	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;
+	virtual int32 GetAttributePoints_Implementation() const override;
+	virtual int32 GetSpellPoints_Implementation() const override;
+	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
+	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
+	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 	//Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UNiagaraComponent> LevelupParticleComp;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCameraComponent> TopDownCameraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USpringArmComponent> CameraBoom;
 protected:
 	virtual void InitActorInfo() override;
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastLevelupParticle() const;
 };

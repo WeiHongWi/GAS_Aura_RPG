@@ -229,10 +229,46 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		float Incoming_exp = GetIncoming_Exp();
 		SetIncoming_Exp(0.f);
 		
-		if (EffectProperties.SourceCharacter->Implements<UPlayerInterface>()) {
-			IPlayerInterface::Execute_AddToExp(EffectProperties.SourceCharacter,Incoming_exp);
+		if (EffectProperties.SourceCharacter->Implements<UPlayerInterface>()
+			&& EffectProperties.SourceCharacter->Implements<UCombatInterface>()) {
+			const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(EffectProperties.SourceCharacter);
+			const int32 CurrentExp = IPlayerInterface::Execute_GetExp(EffectProperties.SourceCharacter);
+
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelFromAmountOfExp(EffectProperties.SourceCharacter, CurrentExp + Incoming_exp);
+			int32 DeltaLevel = NewLevel - CurrentLevel;
+			if (DeltaLevel > 0) {
+				const int32 AttributePoints = 
+					IPlayerInterface::Execute_GetAttributePointsReward(EffectProperties.SourceCharacter, CurrentLevel);
+				const int32 SpellPoints =
+					IPlayerInterface::Execute_GetSpellPointsReward(EffectProperties.SourceCharacter, CurrentLevel);
+
+				IPlayerInterface::Execute_AddToPlayerLevel(EffectProperties.SourceCharacter, DeltaLevel);
+				IPlayerInterface::Execute_AddToAttributePoints(EffectProperties.SourceCharacter, AttributePoints);
+				IPlayerInterface::Execute_AddToSpellPoints(EffectProperties.SourceCharacter, SpellPoints);
+				
+				bTopOffHealth = true;
+				bTopOffMana = true;
+				
+				IPlayerInterface::Execute_LevelUp(EffectProperties.SourceCharacter);
+			}
+			IPlayerInterface::Execute_AddToExp(EffectProperties.SourceCharacter, Incoming_exp);
 		}
 	}
+}
+
+void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute() && bTopOffHealth) {
+		bTopOffHealth = false;
+		SetHealth(GetMaxHealth());
+	}
+	if (Attribute == GetMaxManaAttribute() && bTopOffMana) {
+		bTopOffMana = false;
+		SetMana(GetMaxMana());
+	}
+
 }
 
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const

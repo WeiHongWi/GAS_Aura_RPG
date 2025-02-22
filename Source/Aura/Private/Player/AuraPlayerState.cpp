@@ -27,6 +27,8 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(AAuraPlayerState, level);
 	DOREPLIFETIME(AAuraPlayerState, exp);
+	DOREPLIFETIME(AAuraPlayerState, AttributePoints);
+	DOREPLIFETIME(AAuraPlayerState, SpellPoints);
 }
 
 void AAuraPlayerState::SetLevel(int32 LEVEL)
@@ -54,6 +56,19 @@ void AAuraPlayerState::AddXP(int32 EXP)
 }
 
 
+void AAuraPlayerState::AddAttributePoints(int32 Points)
+{
+	AttributePoints += Points;
+	AttributePointsChange.Broadcast(AttributePoints);
+}
+
+void AAuraPlayerState::AddSpellPoints(int32 Points)
+{
+	SpellPoints += Points;
+	SpellPointsChange.Broadcast(SpellPoints);
+}
+
+
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
 	LevelChange.Broadcast(level);
@@ -62,4 +77,14 @@ void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 void AAuraPlayerState::OnRep_Exp(int32 OldExp)
 {
 	ExpChange.Broadcast(exp);
+}
+
+void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
+{
+	AttributePointsChange.Broadcast(AttributePoints);
+}
+
+void AAuraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints)
+{
+	SpellPointsChange.Broadcast(SpellPoints);
 }

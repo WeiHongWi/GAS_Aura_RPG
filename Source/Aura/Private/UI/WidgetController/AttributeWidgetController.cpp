@@ -6,33 +6,43 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
 #include "AuraGameplayTags.h"
+#include "Player/AuraPlayerState.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 void UAttributeWidgetController::BroadcastInitValue()
 {
-	UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(AttributeSet);
-
 	check(AttributeInfo);
 
-
-	for (auto& Pair : AuraAS->TagsToAttribute) {
+	for (auto& Pair : GetAuraAS()->TagsToAttribute) {
 		FAuraAttributesInfo Info = AttributeInfo->FindAttributeForTag(Pair.Key,true);
-		Info.AttributeValue = Pair.Value().GetNumericValue(AuraAS);
+		Info.AttributeValue = Pair.Value().GetNumericValue(GetAuraAS());
 		AttributeInfoDelegate.Broadcast(Info);
 	}
+
+	PointsChangeDelegate.Broadcast(GetAuraPS()->GetAttributePoints());
 }
 
 void UAttributeWidgetController::BindCallbacksToDependencies()
 {
-	UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(AttributeSet);
-
-	for (auto& Pair : AuraAS->TagsToAttribute) {
+	for (auto& Pair : GetAuraAS()->TagsToAttribute) {
 		AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
-			[this,Pair,AuraAS](const FOnAttributeChangeData& Data) {
+			[this,Pair](const FOnAttributeChangeData& Data) {
 				FAuraAttributesInfo Info = AttributeInfo->FindAttributeForTag(Pair.Key, true);
-				Info.AttributeValue = Pair.Value().GetNumericValue(AuraAS);
+				Info.AttributeValue = Pair.Value().GetNumericValue(GetAuraAS());
 				AttributeInfoDelegate.Broadcast(Info);
 			}
 		);
 	}
 
+	GetAuraPS()->AttributePointsChange.AddLambda([this](int32 points) {
+		PointsChangeDelegate.Broadcast(points);
+		});
+}
+
+void UAttributeWidgetController::UpgradeAttributePoints(const FGameplayTag& AttributeTag)
+{
+	UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComp);
+	check(AuraASC);
+
+	AuraASC->UpgradeAttributeByPoint(AttributeTag);
 }

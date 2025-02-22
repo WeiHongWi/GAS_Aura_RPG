@@ -10,6 +10,8 @@
 
 class UOverlayAuraWidgetController;
 class UAttributeWidgetController;
+class USpellMenuWidgetController;
+struct FWidgetControllerParams;
 /**
  * 
  */
@@ -20,11 +22,17 @@ class AURA_API UAuraAbilitySystemLibrary : public UAbilitySystemBlueprintLibrary
 	
 public:
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetController")
+	static bool  MakeWidgetParams(const UObject* WorldContextObject, FWidgetControllerParams& WCParams,AAuraHUD*& AuraHUD);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetController")
 	static UOverlayAuraWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetController")
 	static UAttributeWidgetController* GetAttributeWidgetController(const UObject* WorldContextObject);
 
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|WidgetController")
+	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
+	
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|CharacterDefaultInfo")
 	static void InitializeDefaultAttribute(const UObject* WorldContextObject,ECharacterClass Class, float level,UAbilitySystemComponent* ASC);
 
@@ -34,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|AbilityDefaultInfo")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObeject);
 	
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|AbilityDefaultInfo")
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObeject);
+
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
 	static bool IsBlockHit(const FGameplayEffectContextHandle& EffectContextHandle);
 

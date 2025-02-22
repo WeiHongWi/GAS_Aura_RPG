@@ -7,6 +7,9 @@
 #include "GameplayTagContainer.h"
 #include "AbilityInfo.generated.h"
 
+
+class UGameplayAbility;
+
 USTRUCT(BlueprintType)
 struct FAuraAbilityInfo
 {
@@ -18,8 +21,14 @@ struct FAuraAbilityInfo
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag = FGameplayTag();
 
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag StatusTag = FGameplayTag();
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FGameplayTag CooldownTag = FGameplayTag();
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FGameplayTag AbilityType= FGameplayTag();
 
 	//Background : Material Instance
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -27,6 +36,12 @@ struct FAuraAbilityInfo
 	//Icon : Image
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<const UTexture2D> Icon = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	int32 LevelRequirement;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TSubclassOf<UGameplayAbility> Ability;
 };
 
 /**

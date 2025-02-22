@@ -5,6 +5,7 @@
 
 #include "Aura/Public/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 
 void UAuraDamageGameplayAbility::CauseDamage(AActor* Target)
 {
@@ -23,4 +24,10 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* Target)
 		*EffectSpecHandle.Data.Get(),
 		UAuraAbilitySystemLibrary::GetAbilitySystemComponent(Target)
 	);
+}
+
+float UAuraDamageGameplayAbility::GetDamageByDamageType(float InLevel, const FGameplayTag DamageType)
+{
+	checkf(DamageTypes.Contains(DamageType), TEXT("The declaration of damage type doesn't contain this [%s]"), *DamageType.ToString());
+	return DamageTypes[DamageType].GetValueAtLevel(InLevel);
 }

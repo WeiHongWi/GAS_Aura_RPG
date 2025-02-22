@@ -17,4 +17,14 @@ class AURA_API UAuraGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Ability")
 	FGameplayTag StartupInputTag;
+
+	virtual FString GetCurrentDescription(int32 level);
+
+	virtual FString GetNextDescription(int32 level);
+
+	static FString GetLockedSpellDescription(int32 level);
+
+	float GetManaCost(float InLevel = 1.f);
+
+	float GetCooldown(float InLevel = 1.f);
 };

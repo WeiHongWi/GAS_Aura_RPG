@@ -16,6 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 );
 
 
+
 /**
  * 
  */
@@ -34,6 +35,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attribute")
 	FAttributeInfoSignature AttributeInfoDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FOnPlayerStateChangeSignature PointsChangeDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttributePoints(const FGameplayTag& AttributeTag);
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
