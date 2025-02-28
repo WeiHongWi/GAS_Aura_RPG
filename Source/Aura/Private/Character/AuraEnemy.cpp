@@ -135,6 +135,8 @@ void AAuraEnemy::InitActorInfo()
 	if (HasAuthority()) {
 		InitDefaultAttributes();
 	}
+
+	OnAscRegistered.Broadcast(AbilitySystemComp);
 }
 
 void AAuraEnemy::InitDefaultAttributes()

@@ -46,20 +46,30 @@ public:
 	FGameplayTag Attributes_Resistance_Arcane;
 	FGameplayTag Attributes_Resistance_Physics;
 
-	//Meta Attributes 
-	FGameplayTag Attributes_Meta_IncomingEXP;
-
-	//Damage and Damage Types
+	//Damage Types
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;
 	FGameplayTag Damage_Lightning;
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physics;
 
+	//Debuff type
+	FGameplayTag Debuff_Burn;
+	FGameplayTag Debuff_Stun;
+	FGameplayTag Debuff_Arcane;
+	FGameplayTag Debuff_Physics;
+
+	FGameplayTag Debuff_Chance;
+	FGameplayTag Debuff_Damage;
+	FGameplayTag Debuff_Duration;
+	FGameplayTag Debuff_Frequency;
+
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
 	//Common Ability
 	FGameplayTag HitReact;
-
+	FGameplayTag Attributes_Meta_IncomingEXP;
+	
 	//Melee
 	FGameplayTag Abilities_None;
 	FGameplayTag Abilities_Attack;

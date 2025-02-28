@@ -7,6 +7,7 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Player/AuraPlayerState.h"
 #include "AbilitySystem/Data/LevelupInfo.h"
+#include "AuraGameplayTags.h"
 
 
 void UOverlayAuraWidgetController::BroadcastInitValue()
@@ -54,6 +55,7 @@ void UOverlayAuraWidgetController::BindCallbacksToDependencies()
 			});
 
 	if (GetAuraASC()) {
+		GetAuraASC()->AbilityEquipped.AddUObject(this, &UOverlayAuraWidgetController::OnAbilityEquip);
 		if (GetAuraASC()->bIsStartupAbilityInitialized) {
 			BroadcastAbilityInfo();
 		}
@@ -77,6 +79,24 @@ void UOverlayAuraWidgetController::BindCallbacksToDependencies()
 	}
 }
 
+
+void UOverlayAuraWidgetController::OnAbilityEquip(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& PrevSlotTag, const FGameplayTag& SlotTag)
+{
+	FAuraGameplayTags Tags = FAuraGameplayTags::Get();
+
+	// Remove the previous slot
+	FAuraAbilityInfo OldAbilityInfo;
+	OldAbilityInfo.AbilityTag = Tags.Abilities_None;
+	OldAbilityInfo.StatusTag = Tags.Abilities_Status_Unlocked;
+	OldAbilityInfo.InputTag = PrevSlotTag;
+	AbilityInfoDelegate.Broadcast(OldAbilityInfo);
+
+	//Broadcast the new slot.
+	FAuraAbilityInfo CurrentAbilityInfo = AbilityInfo->GetAbilityInfoByTag(AbilityTag);
+	CurrentAbilityInfo.StatusTag = StatusTag;
+	CurrentAbilityInfo.InputTag = SlotTag;
+	AbilityInfoDelegate.Broadcast(CurrentAbilityInfo);
+}
 
 void UOverlayAuraWidgetController::OnExpChanged(int32 exp)
 {

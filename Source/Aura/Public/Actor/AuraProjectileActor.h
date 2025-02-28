@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameplayEffectTypes.h"
+#include "AuraAbilityTypes.h"
 #include "AuraProjectileActor.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
 class UNiagaraSystem;
+
+
 
 UCLASS()
 class AURA_API AAuraProjectileActor : public AActor
@@ -20,11 +22,13 @@ public:
 	// Sets default values for this actor's properties
 	AAuraProjectileActor();
 
+	void OnHit();
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
-	FGameplayEffectSpecHandle EffectSpec;
+	FDamageEffectParams DamageEffectParams;
 
 protected:
 	// Called when the game starts or when spawned

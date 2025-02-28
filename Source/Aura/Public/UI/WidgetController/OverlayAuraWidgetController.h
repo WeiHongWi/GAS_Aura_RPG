@@ -76,6 +76,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|PlayerState")
 	FOnPlayerStateChangeSignature OnPlayerStateChangeDelegate;
 
+	void OnAbilityEquip(
+		const FGameplayTag& AbilityTag,
+		const FGameplayTag& StatusTag,
+		const FGameplayTag& PrevSlotTag,
+		const FGameplayTag& SlotTag
+	);
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widget Value")

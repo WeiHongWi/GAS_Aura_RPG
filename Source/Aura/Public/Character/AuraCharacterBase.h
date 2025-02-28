@@ -15,6 +15,7 @@ class UGameplayEffect;
 class UGameplayAbility;
 class UAnimMontage;
 class UNiagaraSystem;
+class UDebuffNiagaraComp;
 
 UCLASS()
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -24,6 +25,9 @@ class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInte
 public:
 	// Sets default values for this character's properties
 	AAuraCharacterBase();
+
+	FOnASCRegistered OnAscRegistered;
+	FOnDeath OnDeath;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
@@ -43,12 +47,17 @@ public:
 	virtual FTagMontage GetTagMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 	virtual int GetMinionCount_Implementation() override;
 	virtual void IncreaseMinionCount_Implementation(int NumOfMinions) override;
+	virtual FOnASCRegistered GetOnASCRegisterDelegate() override;
+	virtual FOnDeath GetOnDeathDelegate() override;
 	//Combat Interface End
 
 	bool IsDead = false;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TArray<FTagMontage> AttackMontages;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComp> BurnNiagaraComp;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Character Class Default")
 	ECharacterClass CharacterClass;

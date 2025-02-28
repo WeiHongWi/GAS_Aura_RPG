@@ -8,8 +8,12 @@
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "CombatInterface.generated.h"
 
+class UAbilitySystemComponent;
 class UNiagaraSystem;
 class UAnimMontage;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*,Acotr);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI,BlueprintType)
@@ -89,5 +93,6 @@ public:
 	ECharacterClass GetCharacterClass();
 
 	virtual void Die()  = 0;
-
+	virtual FOnASCRegistered GetOnASCRegisterDelegate() = 0;
+	virtual FOnDeath GetOnDeathDelegate() = 0;
 };

@@ -124,13 +124,13 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoints_Implementation(const FG
 void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& SlotTag)
 {
 	if (FGameplayAbilitySpec* Spec = GetSpecFromTag(AbilityTag)) {
-		FAuraGameplayTags Tags = FAuraGameplayTags::Get();
-		const FGameplayTag PrevSlot = GetInputTagByAbilityTag(AbilityTag);
-		const FGameplayTag Status = GetStatusByAbilityTag(AbilityTag);
+		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+		const FGameplayTag& PrevSlot = GetInputTagByAbilityTag(AbilityTag);
+		const FGameplayTag& Status = GetStatusByAbilityTag(AbilityTag);
 
 		const bool bStatusValid = Status == Tags.Abilities_Status_Equipped || Status == Tags.Abilities_Status_Unlocked;
 		
-		if (!bStatusValid) {
+		if (bStatusValid) {
 			// Clear all of abilities which contains the input tag which match exactly to Slot.
 			ClearAbilitiesOfSlot(PrevSlot);
 			ClearSlot(Spec);
@@ -139,7 +139,7 @@ void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGamep
 			Spec->DynamicAbilityTags.AddTag(SlotTag);
 			if (Status.MatchesTagExact(Tags.Abilities_Status_Unlocked)) {
 				Spec->DynamicAbilityTags.RemoveTag(Tags.Abilities_Status_Unlocked);
-				Spec->DynamicAbilityTags.RemoveTag(Tags.Abilities_Status_Equipped);
+				Spec->DynamicAbilityTags.AddTag(Tags.Abilities_Status_Equipped);
 			}
 			MarkAbilitySpecDirty(*Spec);
 		}

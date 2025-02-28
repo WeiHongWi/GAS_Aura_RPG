@@ -155,6 +155,8 @@ void USpellMenuWidgetController::OnAbilityEquip(const FGameplayTag& AbilityTag, 
 
 	// Finish equip and end the animation of regional pick hint.
 	EquipButtonStopDelegate.Broadcast(AbilityInfo->GetAbilityInfoByTag(AbilityTag).AbilityType);
+	SpellGlobeReassignSignature.Broadcast(AbilityTag);
+	DeselectSpellGlobe();
 }
 
 void USpellMenuWidgetController::SetBoolByStatus(const FGameplayTag StatusTag, int32 SpellPoints, bool& bSpendPoints, bool& bEquip)

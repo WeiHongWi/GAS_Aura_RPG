@@ -6,28 +6,47 @@
 #include "Aura/Public/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AuraGameplayTags.h"
+#include "AuraAbilityTypes.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 void UAuraDamageGameplayAbility::CauseDamage(AActor* Target)
 {
 	const FGameplayEffectSpecHandle EffectSpecHandle = 
 		MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1);
 
-	for (auto& pair : DamageTypes) {
-		const float scaled_damage = pair.Value.GetValueAtLevel(1);
-		UAuraAbilitySystemLibrary::AssignTagSetByCallerMagnitude(
-			EffectSpecHandle,
-			pair.Key,
-			scaled_damage
-		);
-	}
+	
+	const float scaled_damage = Damage.GetValueAtLevel(1);
+	UAuraAbilitySystemLibrary::AssignTagSetByCallerMagnitude(
+		EffectSpecHandle,
+		DamageType,
+		scaled_damage
+	);
+
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
 		*EffectSpecHandle.Data.Get(),
 		UAuraAbilitySystemLibrary::GetAbilitySystemComponent(Target)
 	);
 }
 
-float UAuraDamageGameplayAbility::GetDamageByDamageType(float InLevel, const FGameplayTag DamageType)
+FDamageEffectParams UAuraDamageGameplayAbility::InitialDamageEffect(AActor* TargetActor) const
 {
-	checkf(DamageTypes.Contains(DamageType), TEXT("The declaration of damage type doesn't contain this [%s]"), *DamageType.ToString());
-	return DamageTypes[DamageType].GetValueAtLevel(InLevel);
+	FDamageEffectParams Params;
+	Params.WorldContextObject = GetAvatarActorFromActorInfo();
+
+	Params.SourceASC = GetAbilitySystemComponentFromActorInfo();
+	Params.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	Params.DamageGameplayEffectClass = DamageEffectClass;
+	
+	Params.Base_Damage = Damage.GetValueAtLevel(GetAbilityLevel());
+	Params.Ability_Level = GetAbilityLevel();
+	Params.DamageType = DamageType;
+	
+	Params.Debuff_Chance = DebuffChance;
+	Params.Debuff_Damage = DebuffDamage;
+	Params.Debuff_Frequency = DebuffFrequency;
+	Params.Debuff_Duration = DebuffDuration;
+
+
+	return Params;
 }
+
