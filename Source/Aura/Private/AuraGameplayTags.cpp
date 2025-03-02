@@ -205,7 +205,7 @@ void FAuraGameplayTags::InitialGameplayTags()
 	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Lightning, GameplayTags.Debuff_Stun);
 
 	//Common Ability 
-	GameplayTags.HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.HitReact"),
 		FString("Tag for enemy react by hitting")
 	);

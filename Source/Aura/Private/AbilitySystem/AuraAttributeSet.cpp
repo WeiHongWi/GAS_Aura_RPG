@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Interaction/PlayerInterface.h"
 #include "AuraAbilityTypes.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 
 
 
@@ -272,15 +273,22 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 		const bool bFatal = NewHealth <= 0.f;
 		if (!bFatal) {
 			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().HitReact);
+			TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
 			EffectProperties.ASCTarget->TryActivateAbilitiesByTag(TagContainer);
+			
+			const FVector& force = UAuraAbilitySystemLibrary::GetKnockbackForce(EffectProperties.EffectContextHandle);
+			if (!force.IsNearlyZero(1.f)) {
+				EffectProperties.TargetCharacter->LaunchCharacter(force, true, true);
+			}
+			
 		}
 		else {
 			ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor);
 			if (CombatInterface) {
-				CombatInterface->Die();
-				SendEXPEvent(EffectProperties);
+				
+				CombatInterface->Die(UAuraAbilitySystemLibrary::GetDeathImpulse(EffectProperties.EffectContextHandle));
 			}
+			SendEXPEvent(EffectProperties);
 		}
 		//Call the damage text widget to it.
 
@@ -347,7 +355,11 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 	Effect->DurationMagnitude = FScalableFloat(Duration);
 
 	//Grant Tag -> convenient to play the animation by this tag.
-	Effect->InheritableOwnedTagsContainer.AddTag(Tags.DamageTypesToDebuffs[DamageType]);
+	//Effect->InheritableOwnedTagsContainer.AddTag(Tags.DamageTypesToDebuffs[DamageType]);
+	FInheritedTagContainer TagContainer = FInheritedTagContainer();
+	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+	TagContainer.Added.AddTag(Tags.DamageTypesToDebuffs[DamageType]);
+	Component.SetAndApplyTargetTagChanges(TagContainer);
 
 	//Set the stacking
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
@@ -370,6 +382,7 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 		Props.ASCTarget->ApplyGameplayEffectSpecToSelf(*MutableEffectSpec);
 	}
 }
+
 
 void UAuraAttributeSet::OnRep_Health(const struct FGameplayAttributeData& OldHealth) const
 {

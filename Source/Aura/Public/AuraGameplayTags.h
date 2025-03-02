@@ -67,7 +67,7 @@ public:
 	TMap<FGameplayTag,FGameplayTag> DamageTypesToResistance;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
 	//Common Ability
-	FGameplayTag HitReact;
+	FGameplayTag Effects_HitReact;
 	FGameplayTag Attributes_Meta_IncomingEXP;
 	
 	//Melee

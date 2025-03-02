@@ -33,12 +33,15 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastHandleDeath();
+	void MulticastHandleDeath(const FVector Impulse);
+
+	
+	
 
 	//Combat Interface Begin
-
 	virtual UAnimMontage* GetHitReactAnimMontage_Implementation() override;
-	virtual void Die() override;
+	virtual void Die(const FVector Impulse) override;
+	
 	virtual FVector GetWeaponTipSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual bool bIsDead_Implementation() const override;
 	virtual AActor* GetAvatarActor_Implementation() override;

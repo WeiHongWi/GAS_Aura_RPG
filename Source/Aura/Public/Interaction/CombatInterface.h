@@ -11,6 +11,7 @@
 class UAbilitySystemComponent;
 class UNiagaraSystem;
 class UAnimMontage;
+struct FEffectProperties;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*,Acotr);
@@ -92,7 +93,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	ECharacterClass GetCharacterClass();
 
-	virtual void Die()  = 0;
+	virtual void Die(const FVector Impulse)  = 0;
+
 	virtual FOnASCRegistered GetOnASCRegisterDelegate() = 0;
 	virtual FOnDeath GetOnDeathDelegate() = 0;
 };

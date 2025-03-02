@@ -10,6 +10,8 @@
 #include "AuraGameplayTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComp.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
@@ -102,16 +104,40 @@ void AAuraCharacterBase::BeginPlay()
 	
 }
 
+
 UAnimMontage* AAuraCharacterBase::GetHitReactAnimMontage_Implementation()
 {
 	return AnimMontage;
 }
 
-void AAuraCharacterBase::Die()
+void AAuraCharacterBase::Die(const FVector Impulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	MulticastHandleDeath();
+	MulticastHandleDeath(Impulse);
 }
+
+void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector Impulse)
+{
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Weapon->AddImpulse(Impulse*0.1f, NAME_None, true);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(Impulse,NAME_None,true);
+	
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Disslove();
+	IsDead = true;
+
+	OnDeath.Broadcast(this);
+}
+
 
 FVector AAuraCharacterBase::GetWeaponTipSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
@@ -172,24 +198,6 @@ void AAuraCharacterBase::IncreaseMinionCount_Implementation(int NumOfMinions)
 	MinionCount += NumOfMinions;
 }
 
-void AAuraCharacterBase::MulticastHandleDeath_Implementation()
-{
-	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
-	Weapon->SetSimulatePhysics(true);
-	Weapon->SetEnableGravity(true);
-	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetEnableGravity(true);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Disslove();
-	IsDead = true;
-
-	OnDeath.Broadcast(this);
-}
 
 void AAuraCharacterBase::Disslove()
 {

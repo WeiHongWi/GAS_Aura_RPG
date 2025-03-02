@@ -79,11 +79,14 @@ int32 AAuraEnemy::GetPlayerLevel_Implementation()
 	return level;
 }
 
-
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitActorInfo();
+	UAuraAbilitySystemLibrary::InitializeDefualtGameplayAbility(this, AbilitySystemComp, CharacterClass);
+
+
 	if (HasAuthority()) {
 		UAuraAbilitySystemLibrary::InitializeDefualtGameplayAbility(this, AbilitySystemComp,CharacterClass);
 	}
@@ -105,15 +108,16 @@ void AAuraEnemy::BeginPlay()
 				OnMaxHealthChange.Broadcast(Data.NewValue);
 			}
 		);
+		
 		AbilitySystemComp->RegisterGameplayTagEvent(
-			FAuraGameplayTags::Get().HitReact, 
+			FAuraGameplayTags::Get().Effects_HitReact, 
 			EGameplayTagEventType::NewOrRemoved
 		).AddUObject(this,&AAuraEnemy::HitReactTagChanged);
 
 
-
 		OnHealthChange.Broadcast(AuraAS->GetHealth());
 		OnMaxHealthChange.Broadcast(AuraAS->GetMaxHealth());
+		
 	}
 }
 
@@ -121,11 +125,11 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCou
 {
 	bHitReact = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = (bHitReact) ? 0.f : BaseWalkSpeed;
+
 	if (EnemyAIController && EnemyAIController->GetBlackboardComponent()) {
 		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("bIsHitReact"), bHitReact);
 	}
 }
-
 
 void AAuraEnemy::InitActorInfo()
 {
@@ -144,11 +148,11 @@ void AAuraEnemy::InitDefaultAttributes()
 	UAuraAbilitySystemLibrary::InitializeDefaultAttribute(this, CharacterClass, level, AbilitySystemComp);
 }
 
-void AAuraEnemy::Die()
+void AAuraEnemy::Die(const FVector Impulse)
 {
 	SetLifeSpan(LifeSpan);
 	if (EnemyAIController) {
 		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	}
-	Super::Die();
+	Super::Die(Impulse);
 }

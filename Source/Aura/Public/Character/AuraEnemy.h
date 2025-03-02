@@ -45,7 +45,7 @@ public:
 
 	bool bHitReact = false;
 
-	float BaseWalkSpeed = 250.f;
+	float BaseWalkSpeed = 350.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
@@ -59,7 +59,8 @@ protected:
 
 	virtual void InitDefaultAttributes() override;
 
-	virtual void Die() override;
+	virtual void Die(const FVector Impulse) override;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Default")
 	int32 level;

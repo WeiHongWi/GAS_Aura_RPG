@@ -7,7 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "DebuffNiagaraComp.generated.h"
 
-struct FGameplayTag;
+
 /**
  * 
  */
@@ -24,7 +24,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	void DebuffChanged(const FGameplayTag DebuffTag, int32 NewCount);
+	void DebuffTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UFUNCTION()
 	void DebuffDeactivate(AActor* DeathActor);

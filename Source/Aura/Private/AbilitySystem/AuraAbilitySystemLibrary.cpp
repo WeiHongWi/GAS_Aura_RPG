@@ -132,12 +132,14 @@ int32 UAuraAbilitySystemLibrary::GetRewardExpForClassAndLevel(const UObject* Wor
 	return static_cast<int32>(exp);
 }
 
-FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(FDamageEffectParams& Params)
+FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& Params)
 {
 	FAuraGameplayTags Tags = FAuraGameplayTags::Get();
 	
 	FGameplayEffectContextHandle EffectContextHandle = Params.SourceASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(Params.SourceASC->GetAvatarActor());
+	SetDeathImpulse(EffectContextHandle,Params.DeathImpulse);
+	SetKnockbackForce(EffectContextHandle, Params.KnockbackForce);
 	FGameplayEffectSpecHandle EffectSpecHandle = Params.SourceASC->MakeOutgoingSpec(Params.DamageGameplayEffectClass, Params.Ability_Level, EffectContextHandle);
 	
 	//Assign the set by caller to spec.
@@ -152,6 +154,50 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(FDamag
 	
 
 	return EffectContextHandle;
+}
+
+TArray<FVector> UAuraAbilitySystemLibrary::SpawnRotateVectors(const FVector& Forward, const FVector& Axis, int32 NumOfProjectiles, float ProjectileSpread)
+{
+	TArray<FVector> SpawnVectors = TArray<FVector>();
+	const FVector LeftForward = Forward.RotateAngleAxis(-ProjectileSpread / 2, FVector::UpVector);
+
+	if (NumOfProjectiles > 1) {
+		const float DeltaSpread = ProjectileSpread / (NumOfProjectiles - 1);
+
+		for (int i = 0; i < NumOfProjectiles; ++i) {
+			const FVector Direction = LeftForward.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
+			SpawnVectors.Add(Direction);
+		}
+	}
+	else {
+		SpawnVectors.Add(Forward);
+	}
+
+	return SpawnVectors;
+}
+
+
+
+
+
+TArray<FRotator> UAuraAbilitySystemLibrary::SpawnRotateRotators(const FVector& Forward, const FVector& Axis, int32 NumOfProjectiles, float ProjectileSpread)
+{
+	TArray<FRotator> SpawnRotators = TArray<FRotator>();
+	const FVector LeftForward = Forward.RotateAngleAxis(-ProjectileSpread / 2, FVector::UpVector);
+	
+	if (NumOfProjectiles > 1) {
+		const float DeltaSpread = ProjectileSpread / (NumOfProjectiles - 1);
+
+		for (int i = 0; i < NumOfProjectiles; ++i) {
+			const FVector Direction = LeftForward.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
+			SpawnRotators.Add(Direction.Rotation());
+		}
+	}
+	else {
+		SpawnRotators.Add(Forward.Rotation());
+	}
+
+	return SpawnRotators;
 }
 
 
@@ -249,6 +295,26 @@ FGameplayTag UAuraAbilitySystemLibrary::GetDamageType(const FGameplayEffectConte
 	return FGameplayTag();
 }
 
+FVector UAuraAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAuraGameplayEffectContext* AuraEffectContextHandle =
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get())) {
+
+		return AuraEffectContextHandle->GetDeathImpulse();
+	}
+	return FVector::ZeroVector;
+}
+
+FVector UAuraAbilitySystemLibrary::GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAuraGameplayEffectContext* AuraEffectContextHandle =
+		static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get())) {
+
+		return AuraEffectContextHandle->GetKnockbackForce();
+	}
+	return FVector::ZeroVector;
+}
+
 void UAuraAbilitySystemLibrary::SetIsBlockHit(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockHit)
 {
 	if (FAuraGameplayEffectContext* AuraEffectContextHandle = 
@@ -291,7 +357,7 @@ void UAuraAbilitySystemLibrary::SetDebuffDuration(UPARAM(ref)FGameplayEffectCont
 	if (FAuraGameplayEffectContext* AuraEffectContextHandle =
 		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get())) {
 
-		AuraEffectContextHandle->SetDebuffDamage(InDuration);
+		AuraEffectContextHandle->SetDebuffDuration(InDuration);
 	}
 }
 
@@ -300,7 +366,7 @@ void UAuraAbilitySystemLibrary::SetDebuffFrequency(UPARAM(ref)FGameplayEffectCon
 	if (FAuraGameplayEffectContext* AuraEffectContextHandle =
 		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get())) {
 
-		AuraEffectContextHandle->SetDebuffDamage(InFrequency);
+		AuraEffectContextHandle->SetDebuffFrequency(InFrequency);
 	}
 }
 
@@ -311,6 +377,24 @@ void UAuraAbilitySystemLibrary::SetDamageType(UPARAM(ref)FGameplayEffectContextH
 
 		TSharedPtr<FGameplayTag> InDamageType = MakeShared<FGameplayTag>(DebuffDamageType);
 		AuraEffectContextHandle->SetDamageType(InDamageType);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetDeathImpulse(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, const FVector& InDeathImpulse)
+{
+	if (FAuraGameplayEffectContext* AuraEffectContextHandle =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get())) {
+
+		AuraEffectContextHandle->SetDeathImpulse(InDeathImpulse);
+	}
+}
+
+void UAuraAbilitySystemLibrary::SetKnockbackForce(UPARAM(ref)FGameplayEffectContextHandle& EffectContextHandle, const FVector& InKnockbackForce)
+{
+	if (FAuraGameplayEffectContext* AuraEffectContextHandle =
+		static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get())) {
+
+		AuraEffectContextHandle->SetKnockbackForce(InKnockbackForce);
 	}
 }
 
