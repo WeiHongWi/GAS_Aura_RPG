@@ -5,6 +5,7 @@
 
 #include "GameFramework/PlayerController.h"
 #include "AbilitySystemComponent.h"
+#include "Aura/Aura.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwningAbility)
 {
@@ -43,7 +44,7 @@ void UTargetDataUnderMouse::SendMouseData()
 
 	FHitResult Hit;
 	if (PlayerRef) {
-		PlayerRef->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, Hit);
+		PlayerRef->GetHitResultUnderCursor(ECC_Target, false, Hit);
 	}
 
 	FGameplayAbilityTargetDataHandle DataHandle;

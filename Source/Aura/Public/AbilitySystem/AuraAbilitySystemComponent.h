@@ -35,6 +35,7 @@ public:
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpAbilities);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpPassivepAbilities);
 
+	void AbilityTagPress(const FGameplayTag& Tag);
 	void AbilityTagHeld(const FGameplayTag& Tag);
 	void AbilityTagRelease(const FGameplayTag& Tag);
 	void ForEachAbility(const FForEachAbility& Delegate);

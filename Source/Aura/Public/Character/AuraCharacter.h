@@ -46,6 +46,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USpringArmComponent> CameraBoom;
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+
+	virtual void OnRep_Stunned() override;
+
+	virtual void OnRep_Burned() override;
 protected:
 	virtual void InitActorInfo() override;
 

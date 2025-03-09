@@ -272,9 +272,11 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 
 		const bool bFatal = NewHealth <= 0.f;
 		if (!bFatal) {
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
-			EffectProperties.ASCTarget->TryActivateAbilitiesByTag(TagContainer);
+			if (EffectProperties.ASCTarget->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(EffectProperties.ASCTarget)) {
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				EffectProperties.ASCTarget->TryActivateAbilitiesByTag(TagContainer);
+			}
 			
 			const FVector& force = UAuraAbilitySystemLibrary::GetKnockbackForce(EffectProperties.EffectContextHandle);
 			if (!force.IsNearlyZero(1.f)) {
@@ -356,9 +358,18 @@ void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 
 	//Grant Tag -> convenient to play the animation by this tag.
 	//Effect->InheritableOwnedTagsContainer.AddTag(Tags.DamageTypesToDebuffs[DamageType]);
+	const FGameplayTag DebuffTag = Tags.DamageTypesToDebuffs[DamageType];
 	FInheritedTagContainer TagContainer = FInheritedTagContainer();
 	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
-	TagContainer.Added.AddTag(Tags.DamageTypesToDebuffs[DamageType]);
+	TagContainer.Added.AddTag(DebuffTag);
+	if (DebuffTag.MatchesTagExact(Tags.Debuff_Stun))
+	{
+		// Stunned, so block input
+		TagContainer.Added.AddTag(Tags.Player_Block_CursorTrace);
+		TagContainer.Added.AddTag(Tags.Player_Block_InputHeld);
+		TagContainer.Added.AddTag(Tags.Player_Block_InputPressed);
+		TagContainer.Added.AddTag(Tags.Player_Block_InputReleased);
+	}
 	Component.SetAndApplyTargetTagChanges(TagContainer);
 
 	//Set the stacking

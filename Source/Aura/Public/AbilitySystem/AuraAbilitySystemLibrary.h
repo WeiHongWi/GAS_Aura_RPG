@@ -109,6 +109,14 @@ public:
 		const FVector& SphereOrigin
 	);
 
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameaplayMechanics")
+	static void FindNumOfNearActos(
+	    int32 MaxNumOfTarget,
+		const TArray<AActor*>& Actors,
+		TArray<AActor*>& OutTargetActors,
+		const FVector& Origin
+	);
+
 	UFUNCTION(BlueprintPure,Category = "AuraAbilitySystemLibrary|GameaplayMechanics")
 	static bool IsFriend(AActor* FirstActor, AActor* SecondActor);
 

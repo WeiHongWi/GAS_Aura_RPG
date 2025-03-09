@@ -424,6 +424,27 @@ void UAuraAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldC
 
 }
 
+void UAuraAbilitySystemLibrary::FindNumOfNearActos(int32 MaxNumOfTarget, const TArray<AActor*>& Actors, TArray<AActor*>& OutTargetActors, const FVector& Origin)
+{
+	// Priority Queue to find the MaxNumOfTarget-th of nearest actor;
+	std::priority_queue<std::pair<double, AActor*>> PriorityQueueOfVectors;
+
+	for (AActor* actor : Actors) {
+		FVector ActorLocation = actor->GetActorLocation();
+		double diff = (ActorLocation - Origin).Length();
+		std::pair<double, AActor*> pair = std::make_pair(diff, actor);
+		PriorityQueueOfVectors.push(pair);
+	}
+
+	for (int i = 1; i <= MaxNumOfTarget; ++i) {
+		if (PriorityQueueOfVectors.empty()) return;
+		std::pair<double, AActor*> tmp = PriorityQueueOfVectors.top();
+		PriorityQueueOfVectors.pop();
+		OutTargetActors.Add(tmp.second);
+	}
+}
+
+
 bool UAuraAbilitySystemLibrary::IsFriend(AActor* FirstActor, AActor* SecondActor)
 {
 	const bool PlayerFriend = FirstActor->ActorHasTag("Player") && SecondActor->ActorHasTag("Player");

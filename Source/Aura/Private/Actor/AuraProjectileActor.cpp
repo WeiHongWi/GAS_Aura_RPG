@@ -21,6 +21,7 @@ void AAuraProjectileActor::OnHit()
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
 	if (LoopingSoundComponent) {
 		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
 	}
 	bHit = true;
 }
@@ -58,6 +59,7 @@ void AAuraProjectileActor::BeginPlay()
 
 void AAuraProjectileActor::OnSphereOvelap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!DamageEffectParams.SourceASC) return;
 	AActor* SourceActor = DamageEffectParams.SourceASC->GetAvatarActor();
 	AActor* PlayerToEnemy = Cast<AActor>(GetInstigator());
 
@@ -93,6 +95,10 @@ void AAuraProjectileActor::OnSphereOvelap(UPrimitiveComponent* OverlappedCompone
 
 void AAuraProjectileActor::Destroyed()
 {
+	if (LoopingSoundComponent) {
+		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
+	}
 	if (!bHit && !HasAuthority()) OnHit();
 	Super::Destroyed();
 }

@@ -16,6 +16,7 @@
 class UWidgetComponent;
 class UBehaviorTree;
 class AAuraAIController;
+struct FGameplayTag;
 
 UCLASS()
 class AURA_API AAuraEnemy : public AAuraCharacter,public IEnemyInterface
@@ -35,6 +36,8 @@ public:
 
 	virtual int32 GetPlayerLevel_Implementation() override;
 
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangeSignature OnHealthChange;
 
@@ -45,13 +48,12 @@ public:
 
 	bool bHitReact = false;
 
-	float BaseWalkSpeed = 350.f;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	TObjectPtr<AActor> CombatTarget;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -60,7 +62,6 @@ protected:
 	virtual void InitDefaultAttributes() override;
 
 	virtual void Die(const FVector Impulse) override;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Class Default")
 	int32 level;

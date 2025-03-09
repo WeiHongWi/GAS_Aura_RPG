@@ -16,6 +16,7 @@ class UGameplayAbility;
 class UAnimMontage;
 class UNiagaraSystem;
 class UDebuffNiagaraComp;
+struct FGameplayTag;
 
 UCLASS()
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -30,13 +31,11 @@ public:
 	FOnDeath OnDeath;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHandleDeath(const FVector Impulse);
-
-	
-	
 
 	//Combat Interface Begin
 	virtual UAnimMontage* GetHitReactAnimMontage_Implementation() override;
@@ -50,8 +49,12 @@ public:
 	virtual FTagMontage GetTagMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 	virtual int GetMinionCount_Implementation() override;
 	virtual void IncreaseMinionCount_Implementation(int NumOfMinions) override;
-	virtual FOnASCRegistered GetOnASCRegisterDelegate() override;
-	virtual FOnDeath GetOnDeathDelegate() override;
+	virtual FOnASCRegistered& GetOnASCRegisterDelegate() override;
+	virtual FOnDeath& GetOnDeathDelegate() override;
+	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
+	virtual void SetIsBeingShocked_Implementation(bool bInShock) override;
+	virtual bool IsBeingShocked_Implementation() const override;
+
 	//Combat Interface End
 
 	bool IsDead = false;
@@ -61,14 +64,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDebuffNiagaraComp> BurnNiagaraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComp> StunNiagaraComp;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Character Class Default")
 	ECharacterClass CharacterClass;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
@@ -127,6 +131,26 @@ protected:
 	USoundBase* DeathSound;
 
 	int MinionCount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float BaseWalkSpeed = 600.f;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Stunned, BlueprintReadOnly)
+	bool bIsStunned;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShockLoop;
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
+
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray < TSubclassOf < UGameplayAbility >> StartUpAbilities;
@@ -142,5 +166,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Material")
 	TObjectPtr<UMaterialInstance> DynamicMaterialWeaponDisslove;
-
 };

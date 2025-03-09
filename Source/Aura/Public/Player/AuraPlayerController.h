@@ -16,6 +16,7 @@ class UInputActionDataAsset;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
 class UDamageWidgetComponent;
+class UNiagaraSystem;
 /**
  * 
  */
@@ -32,6 +33,9 @@ class AURA_API AAuraPlayerController : public APlayerController
 
 	UPROPERTY(EditAnywhere,Category="Input")
 	TObjectPtr<UInputAction> ShiftAction;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 
 	void ShiftPress();
 	void ShiftRelease();

@@ -21,6 +21,9 @@ public:
 	void CauseDamage(AActor* Target);
 
 	UFUNCTION(BlueprintCallable)
+	float GetDamageByLevel() const;
+
+	UFUNCTION(BlueprintCallable)
 	FDamageEffectParams InitialDamageEffect(AActor* TargetActor) const;
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

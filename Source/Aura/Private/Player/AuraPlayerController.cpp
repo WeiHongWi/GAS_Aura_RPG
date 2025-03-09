@@ -14,6 +14,7 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "UI/Widget/DamageWidgetComponent.h"
 #include "GameFramework/Character.h"
+#include "NiagaraFunctionLibrary.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -106,27 +107,36 @@ void AAuraPlayerController::SetupInputComponent()
 
 void AAuraPlayerController::AbilityTagPress(FGameplayTag GameplayTag)
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed)) {
+		return;
+	}
+	
 	if (GameplayTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) {
 		bIsTargeting = ThisActor? true : false;
 		bAutoRunning = false;
 	}
+
+	if (GetASC()) GetASC()->AbilityTagPress(GameplayTag);
 }
 
 void AAuraPlayerController::AbilityTagRelease(FGameplayTag GameplayTag)
 {
-	if (GameplayTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased)) {
+		return;
+	}
+	
+	if (!GameplayTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) {
 		if (GetASC()) {
 			GetASC()->AbilityTagRelease(GameplayTag);
+			return;
 		}
 	}
 	if (GetASC()) GetASC()->AbilityTagRelease(GameplayTag);
 
-	if (!bIsTargeting && !bIsShiftPress) {
-		
+	if (!bIsShiftPress && !bIsTargeting) {
 		APawn* ControllerRef = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControllerRef) {
 			FVector PathStart = ControllerRef->GetActorLocation();
-			UE_LOG(LogTemp, Warning, TEXT("I am so good %f,%f,%f"),CachedDestination.X, CachedDestination.Y, CachedDestination.Z )
 			if (UNavigationPath* Path =
 				UNavigationSystemV1::FindPathToLocationSynchronously(this, PathStart, CachedDestination)) {
 				
@@ -140,6 +150,9 @@ void AAuraPlayerController::AbilityTagRelease(FGameplayTag GameplayTag)
 					bAutoRunning = true;
 				}
 			}
+			if (GetASC() && !GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed)) {
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+			}
 		}
 		FollowTime = 0.f;
 		bIsTargeting = false;
@@ -148,9 +161,13 @@ void AAuraPlayerController::AbilityTagRelease(FGameplayTag GameplayTag)
 
 void AAuraPlayerController::AbilityTagHeld(FGameplayTag GameplayTag)
 {
-	if (GameplayTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld)) {
+		return;
+	}
+	if (!GameplayTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB)) {
 		if (GetASC()) {
 			GetASC()->AbilityTagHeld(GameplayTag);
+			return;
 		}
 	}
 	if (bIsTargeting || bIsShiftPress) {
@@ -210,6 +227,13 @@ void AAuraPlayerController::Move(const FInputActionValue& ActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
+	if (GetASC() && GetASC()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace)) {
+		if(LastActor)LastActor->UnHighLight();
+		if(ThisActor)ThisActor->UnHighLight();
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		return;
+	}
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 	LastActor = ThisActor;

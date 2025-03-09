@@ -14,7 +14,6 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* Target)
 	const FGameplayEffectSpecHandle EffectSpecHandle = 
 		MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1);
 
-	
 	const float scaled_damage = Damage.GetValueAtLevel(1);
 	UAuraAbilitySystemLibrary::AssignTagSetByCallerMagnitude(
 		EffectSpecHandle,
@@ -26,6 +25,11 @@ void UAuraDamageGameplayAbility::CauseDamage(AActor* Target)
 		*EffectSpecHandle.Data.Get(),
 		UAuraAbilitySystemLibrary::GetAbilitySystemComponent(Target)
 	);
+}
+
+float UAuraDamageGameplayAbility::GetDamageByLevel() const
+{
+	return Damage.GetValueAtLevel(GetAbilityLevel());
 }
 
 FDamageEffectParams UAuraDamageGameplayAbility::InitialDamageEffect(AActor* TargetActor) const
