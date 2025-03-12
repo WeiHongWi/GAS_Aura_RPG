@@ -90,6 +90,11 @@ public:
 	FGameplayTag Abilities_Lightning_Electrocute;
 	FGameplayTag Cooldown_Fire_Firebolt;
 
+	//Passive Spell
+	FGameplayTag Abilities_Passive_HaloOfProtection;
+	FGameplayTag Abilities_Passive_LifeSiphon;
+	FGameplayTag Abilities_Passive_ManaSiphon;
+
 	//Combat
 	FGameplayTag CombatSocket_Weapon;
 	FGameplayTag CombatSocket_RightHand;

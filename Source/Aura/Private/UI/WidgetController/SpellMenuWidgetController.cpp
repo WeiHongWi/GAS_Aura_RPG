@@ -121,7 +121,7 @@ void USpellMenuWidgetController::EquipButtonClicked()
 
 	FGameplayTag Status = GetAuraASC()->GetStatusByAbilityTag(SelectedAbility.Ability);
 	if (Status == FAuraGameplayTags::Get().Abilities_Status_Equipped) {
-		SelectedSlot = GetAuraASC()->GetInputTagByAbilityTag(SelectedAbility.Ability);
+		SelectedSlot = GetAuraASC()->GetSlotByAbilityTag(SelectedAbility.Ability);
 	}
 }
 

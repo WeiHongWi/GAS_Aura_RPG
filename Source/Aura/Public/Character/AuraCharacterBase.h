@@ -17,6 +17,7 @@ class UAnimMontage;
 class UNiagaraSystem;
 class UDebuffNiagaraComp;
 struct FGameplayTag;
+class UPassiveNiagaraComponent;
 
 UCLASS()
 class AURA_API AAuraCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -31,6 +32,7 @@ public:
 	FOnDeath OnDeath;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
@@ -166,4 +168,16 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Material")
 	TObjectPtr<UMaterialInstance> DynamicMaterialWeaponDisslove;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> HaloProtectionNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> LifeSiphonNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPassiveNiagaraComponent> ManaSiphonNiagaraComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> EffectAttachComponent;
 };
