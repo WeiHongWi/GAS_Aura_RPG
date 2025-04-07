@@ -58,6 +58,9 @@ public:
 	void AddToPlayerCoin(int32 InCoin);
 
 	UFUNCTION(BlueprintNativeEvent)
+	void SetPlayerCoin(int32 InCoin);
+
+	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
 
 	UFUNCTION(BlueprintNativeEvent)

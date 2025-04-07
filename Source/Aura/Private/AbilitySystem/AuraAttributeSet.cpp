@@ -343,6 +343,7 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperti
 void UAuraAttributeSet::HandleIncomingCoin(const FEffectProperties& Props)
 {
 	AActor* TargetActor = Props.TargetAvatarActor;
+	
 	if (TargetActor->Implements<UPlayerInterface>()) {
 		IPlayerInterface::Execute_AddToPlayerCoin(TargetActor, 1);
 	}

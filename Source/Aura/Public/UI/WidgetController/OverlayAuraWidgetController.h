@@ -47,7 +47,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FUIWidgetRow,Row
 );
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnCoinChangedSignature,
+	int32, NewCoin
+);
 
 
 
@@ -80,6 +83,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|PlayerState")
 	FOnLevelChangedSignature OnPlayerStateChangeDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "GAS|PlayerState")
+	FOnCoinChangedSignature OnCoinChangedSignature;
 
 	void OnAbilityEquip(
 		const FGameplayTag& AbilityTag,

@@ -181,6 +181,14 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 	AuraPlayerState->AddSpellPoints(InSpellPoints);
 }
 
+void AAuraCharacter::SetPlayerCoin_Implementation(int32 InCoin)
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	AuraPlayerState->SetCoin(InCoin);
+}
+
 void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
 {
 	AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController());

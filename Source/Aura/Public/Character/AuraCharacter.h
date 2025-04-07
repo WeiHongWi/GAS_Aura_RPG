@@ -38,6 +38,7 @@ public:
 	virtual void AddToPlayerCoin_Implementation(int32 InCoin) override;
 	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
+	virtual void SetPlayerCoin_Implementation(int32 InCoin) override;
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial) override;
 	virtual void HideMagicCircle_Implementation() override;
 	virtual void SaveProgress_Implementation(const FName& PlayerTag) override;

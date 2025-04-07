@@ -21,12 +21,16 @@ void UOverlayAuraWidgetController::BroadcastInitValue()
 void UOverlayAuraWidgetController::BindCallbacksToDependencies()
 {
 	GetAuraPS()->ExpChange.AddUObject(this, &UOverlayAuraWidgetController::OnExpChanged);
-	
+
 	GetAuraPS()->LevelChange.AddLambda(
-		[this](int32 NewLevel,bool bLevelUp) {
+		[this](int32 NewLevel, bool bLevelUp) {
 			OnPlayerStateChangeDelegate.Broadcast(NewLevel, bLevelUp);
 		});
 
+	GetAuraPS()->CoinChange.AddLambda(
+		[this](int32 NewCoin) {
+			OnCoinChangedSignature.Broadcast(NewCoin);
+		});
 
 	AbilitySystemComp->GetGameplayAttributeValueChangeDelegate(GetAuraAS()->GetHealthAttribute())
 		.AddLambda(
