@@ -150,8 +150,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
 	FGameplayAttributeData Incoming_Exp;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Incoming_Exp);
-	
 
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData Incoming_Coin;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Incoming_Coin);
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
@@ -223,6 +225,8 @@ private:
 
 	void HandleIncomingDamage(const FEffectProperties& Props);
 	void HandleIncomingXP(const FEffectProperties& Props);
+	void HandleIncomingCoin(const FEffectProperties& Props);
+
 	void Debuff(const FEffectProperties& Props);
 
 };

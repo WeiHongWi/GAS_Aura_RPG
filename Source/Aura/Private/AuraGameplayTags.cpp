@@ -216,6 +216,12 @@ void FAuraGameplayTags::InitialGameplayTags()
 		FString("Incoming XP for meta attribute")
 	);
 
+	GameplayTags.Attributes_Meta_IncomingCoin = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingCoin"),
+		FString("Incoming Coin for meta attribute")
+	);
+
+
 	//Attack Ability
 	GameplayTags.Abilities_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.None"),

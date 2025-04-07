@@ -53,6 +53,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetPlayerLevel();
 
+	
+
 	virtual FVector GetPartSocketLocation();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

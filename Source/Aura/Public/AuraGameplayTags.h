@@ -69,6 +69,7 @@ public:
 	//Common Ability
 	FGameplayTag Effects_HitReact;
 	FGameplayTag Attributes_Meta_IncomingEXP;
+	FGameplayTag Attributes_Meta_IncomingCoin;
 	
 	//Melee
 	FGameplayTag Abilities_None;

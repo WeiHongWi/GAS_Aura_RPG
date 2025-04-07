@@ -207,6 +207,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	if (data.EvaluatedData.Attribute == GetIncoming_ExpAttribute()) {
 		HandleIncomingXP(EffectProperties);
 	}
+
+	if (data.EvaluatedData.Attribute == GetIncoming_CoinAttribute()) {
+		HandleIncomingCoin(EffectProperties);
+	}
 }
 
 void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
@@ -335,6 +339,16 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperti
 		IPlayerInterface::Execute_AddToExp(EffectProperties.SourceCharacter, Incoming_exp);
 	}
 }
+
+void UAuraAttributeSet::HandleIncomingCoin(const FEffectProperties& Props)
+{
+	AActor* TargetActor = Props.TargetAvatarActor;
+	if (TargetActor->Implements<UPlayerInterface>()) {
+		IPlayerInterface::Execute_AddToPlayerCoin(TargetActor, 1);
+	}
+}
+
+
 
 void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 {

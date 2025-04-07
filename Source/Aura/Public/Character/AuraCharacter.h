@@ -33,7 +33,9 @@ public:
 	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;
 	virtual int32 GetAttributePoints_Implementation() const override;
 	virtual int32 GetSpellPoints_Implementation() const override;
+	virtual int32 GetPlayerCoin_Implementation() const override;
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
+	virtual void AddToPlayerCoin_Implementation(int32 InCoin) override;
 	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial) override;
@@ -42,6 +44,7 @@ public:
 
 	//Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() override;
+	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UNiagaraComponent> LevelupParticleComp;

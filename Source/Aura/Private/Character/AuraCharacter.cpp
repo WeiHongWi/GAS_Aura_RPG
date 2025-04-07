@@ -138,6 +138,14 @@ int32 AAuraCharacter::GetSpellPoints_Implementation() const
 	return AuraPlayerState->GetSpellPoints();
 }
 
+int32 AAuraCharacter::GetPlayerCoin_Implementation() const
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	return AuraPlayerState->GetCoin();
+}
+
 void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -147,6 +155,14 @@ void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(GetAbilitySystemComponent())) {
 		AuraASC->UpdateStatus(AuraPlayerState->GetPlayerLevel());
 	};
+}
+
+void AAuraCharacter::AddToPlayerCoin_Implementation(int32 InCoin)
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
+	check(AuraPlayerState);
+
+	AuraPlayerState->AddCoin(InCoin);
 }
 
 void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
@@ -241,6 +257,7 @@ int32 AAuraCharacter::GetPlayerLevel_Implementation()
 
 	return AuraPlayerState->GetPlayerLevel();
 }
+
 
 void AAuraCharacter::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {

@@ -40,6 +40,9 @@ public:
 	int32 GetSpellPoints() const;
 
 	UFUNCTION(BlueprintNativeEvent)
+	int32 GetPlayerCoin() const;
+
+	UFUNCTION(BlueprintNativeEvent)
 	void AddToExp(int32 exp);
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -50,6 +53,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void AddToSpellPoints(int32 InSpellPoints);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AddToPlayerCoin(int32 InCoin);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
