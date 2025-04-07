@@ -31,10 +31,11 @@ public:
 	TObjectPtr<ULevelupInfo> LevelupInfo;
 
 	// Player State Change Delegate
-	FPlayerStateChangeSignature ExpChange;
 	FOnLevelChanged LevelChange;
+	FPlayerStateChangeSignature ExpChange;
 	FPlayerStateChangeSignature AttributePointsChange;
 	FPlayerStateChangeSignature SpellPointsChange;
+	FPlayerStateChangeSignature CoinChange;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
@@ -45,11 +46,16 @@ public:
 	FORCEINLINE int32 GetXP() const { return exp; };
 	FORCEINLINE int32 GetAttributePoints() const { return AttributePoints; }
 	FORCEINLINE int32 GetSpellPoints() const { return SpellPoints; }
+	FORCEINLINE int32 GetCoin() const { return Coin; }
 
 	void SetLevel(int32 LEVEL);
 	void AddLevel(int32 LEVEL);
+
 	void SetXP(int32 EXP);
 	void AddXP(int32 EXP);
+
+	void SetCoin(int32 InCoin);
+	void AddCoin(int32 InCoin);
 
 	void AddAttributePoints(int32 Points);
 	void SetAttributePoints(int32 Points);
@@ -75,6 +81,12 @@ protected:
 
 	UFUNCTION()
 	void OnRep_Exp(int32 OldExp);
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Coin)
+	int32 Coin = 0.f;
+
+	UFUNCTION()
+	void OnRep_Coin(int32 OldCoin);
 
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_AttributePoints)
 	int32 AttributePoints = 0;

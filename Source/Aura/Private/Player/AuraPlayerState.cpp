@@ -55,6 +55,18 @@ void AAuraPlayerState::AddXP(int32 EXP)
 	ExpChange.Broadcast(exp);
 }
 
+void AAuraPlayerState::SetCoin(int32 InCoin)
+{
+	Coin = InCoin;
+	CoinChange.Broadcast(Coin);
+}
+
+void AAuraPlayerState::AddCoin(int32 InCoin)
+{
+	Coin += InCoin;
+	CoinChange.Broadcast(Coin);
+}
+
 
 void AAuraPlayerState::AddAttributePoints(int32 Points)
 {
@@ -89,6 +101,11 @@ void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 void AAuraPlayerState::OnRep_Exp(int32 OldExp)
 {
 	ExpChange.Broadcast(exp);
+}
+
+void AAuraPlayerState::OnRep_Coin(int32 OldCoin)
+{
+	CoinChange.Broadcast(Coin);
 }
 
 void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
