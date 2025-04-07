@@ -9,11 +9,14 @@
 #include "Components/WidgetComponent.h"
 #include "UI/Widget/AuraUserWidget.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "AbilitySystem/Data/EnemyDrops.h"
 #include "AuraGameplayTags.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AI/AuraAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Game/AuraGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 AAuraEnemy::AAuraEnemy()
 {
@@ -141,6 +144,28 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCou
 	}
 }
 
+void AAuraEnemy::RandomSpawnTheActor(FVector& Location)
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!AuraGameMode) return;
+
+	if(AuraGameMode->EnemyDrops->Drops.Num() == 0) return;
+	
+	int32 NumOfDrops = AuraGameMode->EnemyDrops->Drops.Num();
+	int32 RandomNum = FMath::RandRange(0,NumOfDrops);
+	
+	//Means Drop Nothing.
+	if (RandomNum == NumOfDrops) return;
+
+	TSubclassOf<AActor> ActorClass = AuraGameMode->EnemyDrops->Drops[RandomNum];
+	FVector SpawnLocation = Location + FVector(0, 0, 50);
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+	AActor* SpawnActor = GetWorld()->SpawnActor<AActor>(ActorClass, SpawnLocation, SpawnRotation);
+
+}
+
+
+
 void AAuraEnemy::InitActorInfo()
 {
 	AbilitySystemComp->InitAbilityActorInfo(this, this);
@@ -169,4 +194,7 @@ void AAuraEnemy::Die(const FVector Impulse)
 		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	}
 	Super::Die(Impulse);
+
+	FVector ActorLocation = GetActorLocation();
+	RandomSpawnTheActor(ActorLocation);
 }

@@ -16,6 +16,7 @@
 class UWidgetComponent;
 class UBehaviorTree;
 class AAuraAIController;
+class UEnemyDrops;
 struct FGameplayTag;
 
 UCLASS()
@@ -48,6 +49,8 @@ public:
 
 	bool bHitReact = false;
 
+	void RandomSpawnTheActor(FVector& Location);
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
 
@@ -74,5 +77,4 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AAuraAIController> EnemyAIController;
-
 };

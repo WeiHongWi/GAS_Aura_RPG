@@ -177,6 +177,8 @@ void AAuraCharacterBase::Die(const FVector Impulse)
 void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector Impulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -189,12 +191,14 @@ void AAuraCharacterBase::MulticastHandleDeath_Implementation(const FVector Impul
 	GetMesh()->AddImpulse(Impulse,NAME_None,true);
 	
 
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	Disslove();
 	IsDead = true;
 
 	OnDeath.Broadcast(this);
 	StunNiagaraComp->Deactivate();
+
+	
 }
 
 

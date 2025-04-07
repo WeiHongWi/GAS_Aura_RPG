@@ -11,6 +11,7 @@ class UMVVM_LoadSlot;
 class UCharacterClassInfo;
 class UAbilityInfo;
 class ULoadScreenSaveGame;
+class UEnemyDrops;
 
 /**
  * 
@@ -43,6 +44,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Info")
 	TObjectPtr<UAbilityInfo> AuraAbilityInfo;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Drops")
+	TObjectPtr<UEnemyDrops> EnemyDrops;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;

@@ -225,7 +225,6 @@ void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute,
 		bTopOffMana = false;
 		SetMana(GetMaxMana());
 	}
-
 }
 
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
@@ -348,8 +347,6 @@ void UAuraAttributeSet::HandleIncomingCoin(const FEffectProperties& Props)
 		IPlayerInterface::Execute_AddToPlayerCoin(TargetActor, 1);
 	}
 }
-
-
 
 void UAuraAttributeSet::Debuff(const FEffectProperties& Props)
 {
