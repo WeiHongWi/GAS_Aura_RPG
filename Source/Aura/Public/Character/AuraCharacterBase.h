@@ -30,8 +30,10 @@ public:
 
 	FOnASCRegistered OnAscRegistered;
 	FOnDeath OnDeath;
+	FOnDamage OnDamage;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
@@ -53,6 +55,7 @@ public:
 	virtual void IncreaseMinionCount_Implementation(int NumOfMinions) override;
 	virtual FOnASCRegistered& GetOnASCRegisterDelegate() override;
 	virtual FOnDeath& GetOnDeathDelegate() override;
+	virtual FOnDamage& GetOnDamageDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual void SetIsBeingShocked_Implementation(bool bInShock) override;
 	virtual bool IsBeingShocked_Implementation() const override;
@@ -144,7 +147,7 @@ protected:
 	bool bIsBurned;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
-	bool bIsBeingShockLoop;
+	bool bIsBeingShockLoop = false;
 
 	UFUNCTION()
 	virtual void OnRep_Burned();

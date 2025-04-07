@@ -15,6 +15,7 @@ struct FEffectProperties;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*,Acotr);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamage, float);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI,BlueprintType)
@@ -105,7 +106,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetIsBeingShocked(bool bInShock);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void HideMagicCircle();
+
 	virtual void Die(const FVector Impulse)  = 0;
 	virtual FOnASCRegistered& GetOnASCRegisterDelegate() = 0;
 	virtual FOnDeath& GetOnDeathDelegate() = 0;
+	virtual FOnDamage& GetOnDamageDelegate() = 0;
 };

@@ -36,6 +36,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	float, value
 );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+	FOnLevelChangedSignature, 
+	int32, NewLevel, 
+	bool, bLevelUp
+);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FMessageWidgetSignature,
@@ -74,7 +79,7 @@ public:
 	FOnAttributeChangeSignature OnXpPercentChangeDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category = "GAS|PlayerState")
-	FOnPlayerStateChangeSignature OnPlayerStateChangeDelegate;
+	FOnLevelChangedSignature OnPlayerStateChangeDelegate;
 
 	void OnAbilityEquip(
 		const FGameplayTag& AbilityTag,

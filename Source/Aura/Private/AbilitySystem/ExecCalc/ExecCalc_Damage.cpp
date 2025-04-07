@@ -9,6 +9,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuraDamageStatics
 {
@@ -96,6 +97,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
@@ -127,8 +129,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			const float Chance = Debuff_Chance * (100 - TargetTypeResistance) / 100.f;
 			const bool bDebuff = FMath::RandRange(1, 100) < Chance;
 			if (bDebuff) {
-				FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
-
 				UAuraAbilitySystemLibrary::SetIsSuccessfulDebuff(EffectContextHandle, true);
 				UAuraAbilitySystemLibrary::SetDamageType(EffectContextHandle, DamageType);
 
@@ -139,7 +139,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 				UAuraAbilitySystemLibrary::SetDebuffDamage(EffectContextHandle, DebuffDamage);
 				UAuraAbilitySystemLibrary::SetDebuffDuration(EffectContextHandle, DebuffDuration);
 				UAuraAbilitySystemLibrary::SetDebuffFrequency(EffectContextHandle, DebuffFrequency);
-			
 			}
 		}
 	}
@@ -152,15 +151,38 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			TEXT("TagsToCaptureDef doesn't contain Tag: [%s] in ExecCalc_Damage"), *Resistance.ToString());
 
 
-		const FGameplayEffectAttributeCaptureDefinition AttributeCaptureDef 
+		const FGameplayEffectAttributeCaptureDefinition AttributeCaptureDef
 			= TagsToCaptureDefs[Resistance];
 
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(pair.Key,false);
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(pair.Key, false);
+		if (DamageTypeValue <= 0.f) continue;
 
 		float resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AttributeCaptureDef, EvaluationParameters, resistance);
 		resistance = FMath::Clamp(resistance, 0.f, 100.f);
 		DamageTypeValue *= (100.f - resistance) / 100.f;
+
+
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle)) {
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar)) {
+				CombatInterface->GetOnDamageDelegate().AddLambda([&](float DamageTaken) {
+					DamageTypeValue = DamageTaken;
+					});
+			}
+		}
+		UGameplayStatics::ApplyRadialDamageWithFalloff(
+			TargetAvatar,
+			DamageTypeValue,
+			0.f,
+			UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+			UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+			UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+			1.f,
+			UDamageType::StaticClass(),
+			TArray<AActor*>(),
+			SourceAvatar,
+			nullptr
+		);
 
 		Damage += DamageTypeValue;
 	}
@@ -209,7 +231,6 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 
 	bool ShouldCriticalHit = CriticalHitChance <= (CriticalHitProbability/100);
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, ShouldCriticalHit);
 
 	if (ShouldCriticalHit) {

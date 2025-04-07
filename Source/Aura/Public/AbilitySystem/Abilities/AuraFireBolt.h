@@ -36,5 +36,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FireBolt")
 	bool bHomingTarget = true;
-
 };

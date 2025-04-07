@@ -59,6 +59,11 @@ FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
 	return OnDeath;
 }
 
+FOnDamage& AAuraCharacterBase::GetOnDamageDelegate()
+{
+	return OnDamage;
+}
+
 USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
 {
 	return Weapon;
@@ -77,6 +82,13 @@ bool AAuraCharacterBase::IsBeingShocked_Implementation() const
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComp;
+}
+
+float AAuraCharacterBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnDamage.Broadcast(DamageTaken);
+	return DamageTaken;
 }
 
 void AAuraCharacterBase::Tick(float DeltaTime)

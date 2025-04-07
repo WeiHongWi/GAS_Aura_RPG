@@ -23,6 +23,7 @@ public:
 	AAuraCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+
 	//Player Interface
 	virtual int32 GetExp_Implementation() const override;
 	virtual void AddToExp_Implementation(int32 exp) override;
@@ -35,6 +36,10 @@ public:
 	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
 	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
+	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial) override;
+	virtual void HideMagicCircle_Implementation() override;
+	virtual void SaveProgress_Implementation(const FName& PlayerTag) override;
+
 	//Combat Interface
 	virtual int32 GetPlayerLevel_Implementation() override;
 
@@ -57,4 +62,6 @@ protected:
 
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastLevelupParticle() const;
+
+	void LoadProgress();
 };

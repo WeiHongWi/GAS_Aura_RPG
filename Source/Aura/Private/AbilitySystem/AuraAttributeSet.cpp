@@ -272,7 +272,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 
 		const bool bFatal = NewHealth <= 0.f;
 		if (!bFatal) {
-			if (EffectProperties.ASCTarget->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(EffectProperties.ASCTarget)) {
+			if (EffectProperties.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(EffectProperties.TargetCharacter)) {
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
 				EffectProperties.ASCTarget->TryActivateAbilitiesByTag(TagContainer);

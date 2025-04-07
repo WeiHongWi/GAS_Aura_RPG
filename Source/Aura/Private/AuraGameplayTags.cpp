@@ -237,7 +237,12 @@ void FAuraGameplayTags::InitialGameplayTags()
 		FString("Tag for spell the firebolt")
 	);
 
-	GameplayTags.Abilities_Fire_Firebolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
+	GameplayTags.Abilities_Fire_Fireblast = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Fire.Fireblast"),
+		FString("Tag for spell the fireblast")
+	);
+
+	GameplayTags.Cooldown_Fire_Firebolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Cooldown.Fire.Firebolt"),
 		FString("Tag for cooldown of spelling the firebolt")
 	);
@@ -245,6 +250,12 @@ void FAuraGameplayTags::InitialGameplayTags()
 		FName("Abilities.Lightning.Electrocute"),
 		FString("Electrocute Ability Tag")
 	);
+	GameplayTags.Abilities_Arcane_ArcaneShard = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Arcane.ArcaneShard"),
+		FString("ArcaneShard Ability Tag")
+	);
+
+
 	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.HitReact"),
 		FString("Hit React Ability")
@@ -365,6 +376,11 @@ void FAuraGameplayTags::InitialGameplayTags()
 	GameplayTags.Player_Block_InputReleased = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Player.Block.InputReleased"),
 		FString("Block Input Released callback for input")
+	);
+
+	GameplayTags.GameplayCue_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("GameplayCue.FireBlast"),
+		FString("GameplayCue for Fire Blast")
 	);
 
 }

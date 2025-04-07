@@ -53,4 +53,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void LevelUp();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SaveProgress(const FName& PlayerTag);
 };

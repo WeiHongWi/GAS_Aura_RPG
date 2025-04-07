@@ -23,8 +23,8 @@ void UOverlayAuraWidgetController::BindCallbacksToDependencies()
 	GetAuraPS()->ExpChange.AddUObject(this, &UOverlayAuraWidgetController::OnExpChanged);
 	
 	GetAuraPS()->LevelChange.AddLambda(
-		[this](int32 NewLevel) {
-			OnPlayerStateChangeDelegate.Broadcast(NewLevel);
+		[this](int32 NewLevel,bool bLevelUp) {
+			OnPlayerStateChangeDelegate.Broadcast(NewLevel, bLevelUp);
 		});
 
 
@@ -85,6 +85,7 @@ void UOverlayAuraWidgetController::OnAbilityEquip(const FGameplayTag& AbilityTag
 	FAuraGameplayTags Tags = FAuraGameplayTags::Get();
 
 	// Remove the previous slot
+	
 	FAuraAbilityInfo OldAbilityInfo;
 	OldAbilityInfo.AbilityTag = Tags.Abilities_None;
 	OldAbilityInfo.StatusTag = Tags.Abilities_Status_Unlocked;

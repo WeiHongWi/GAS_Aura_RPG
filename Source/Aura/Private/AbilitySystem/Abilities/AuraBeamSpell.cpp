@@ -3,10 +3,49 @@
 
 #include "AbilitySystem/Abilities/AuraBeamSpell.h"
 
+#include "AuraGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
+
+FString UAuraBeamSpell::GetCurrentDescription(int32 level)
+{
+	FAuraGameplayTags Tag = FAuraGameplayTags::Get();
+	const int32 ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	float ManaCost = GetManaCost(level);
+	float CooldownTime = GetCooldown(level);
+
+
+	return FString::Printf(TEXT("<Title>%s </>\n<Default>%s </><Damage>%d </><Default>%s </>\n\n<Default> Level</>: <Level>%d</>\n<Default> Mana cost</>: <ManaCost>%.1f</>\n<Default> Cooldown Time</>: <Cooldown>%.1f</>"),
+		L"Lightning Shock",
+		L"Lauch beam of lightning, trigger stuuned and cause continuos damage",
+		ScaledDamage,
+		L"Lightning with a chance to stunned.",
+		level,
+		ManaCost,
+		CooldownTime
+	);
+}
+
+FString UAuraBeamSpell::GetNextDescription(int32 level)
+{
+	FAuraGameplayTags Tag = FAuraGameplayTags::Get();
+	const int32 ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	float ManaCost = GetManaCost(level);
+	float CooldownTime = GetCooldown(level);
+
+
+	return FString::Printf(TEXT("<Title>%s </>\n<Default>%s </><Damage>%d </><Default>%s </>\n\n<Default> Level</>: <Level>%d</>\n<Default> Mana cost</>: <ManaCost>%.1f</>\n<Default> Cooldown Time</>: <Cooldown>%.1f</>"),
+		L"Lightning Shock",
+		L"Lauch beam of lightning, trigger stuuned and cause continuos damage",
+		ScaledDamage,
+		L"Lightning with a chance to stunned.",
+		level,
+		ManaCost,
+		CooldownTime
+	);
+}
 
 void UAuraBeamSpell::StoreOwnerVariables()
 {

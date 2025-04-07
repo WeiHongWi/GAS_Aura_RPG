@@ -11,6 +11,7 @@
 class UOverlayAuraWidgetController;
 class UAttributeWidgetController;
 class USpellMenuWidgetController;
+class ULoadScreenSaveGame;
 struct FWidgetControllerParams;
 struct FDamageEffectParams;
 /**
@@ -37,6 +38,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|CharacterDefaultInfo")
 	static void InitializeDefaultAttribute(const UObject* WorldContextObject,ECharacterClass Class, float level,UAbilitySystemComponent* ASC);
 
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|CharacterDefaultInfo")
+	static void InitializeDefaultAttribute_SaveGame(const UObject* WorldContextObject, UAbilitySystemComponent* ASC,ULoadScreenSaveGame* SaveGame);
+
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|AbilityDefaultInfo")
 	static void InitializeDefualtGameplayAbility(const UObject* WorldContextObeject, UAbilitySystemComponent* ASC, ECharacterClass Class);
 
@@ -46,6 +50,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|AbilityDefaultInfo")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObeject);
 
+	
+	// Getter and Setter
+
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
 	static bool IsBlockHit(const FGameplayEffectContextHandle& EffectContextHandle);
 
@@ -54,6 +61,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
 	static bool IsSuccessfulDebuff(const FGameplayEffectContextHandle& EffectContextHandle);
+	
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
+	static bool IsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle);
 	
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
 	static float GetDebuffDamage(const FGameplayEffectContextHandle& EffectContextHandle);
@@ -72,6 +82,15 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
 	static FVector GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+	
+	UFUNCTION(BlueprintPure, Category = "AuraAbilitySystemLibrary|EffectContext")
+	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|EffectContext")
 	static void SetIsBlockHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle,bool bInIsBlockHit);
@@ -100,6 +119,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayEffects")
 	static void SetKnockbackForce(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InKnockbackForce);
 
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetIsRadialDamage(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const bool IsRadialDamge);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageInnerRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const float InnerRadius);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageOuterRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const float OuterRadius);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageOrigin(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& Origin);
+
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameaplayMechanics")
 	static void GetLivePlayersWithinRadius(
 		const UObject* WorldContextObject,
@@ -127,4 +158,16 @@ public:
 
 	static TArray<FVector> SpawnRotateVectors(const FVector& Forward, const FVector& Axis, int32 NumOfProjectiles, float ProjectileSpread);
 	static TArray<FRotator> SpawnRotateRotators(const FVector& Forward, const FVector& Axis, int32 NumOfProjectiles, float ProjectileSpread);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetIsRadialDamageEffectParams(UPARAM(ref) FDamageEffectParams& Params,bool IsRadial,float InnerRadius,float OuterRadius,FVector SphereOrigin);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetKnockbackDirectionParams(UPARAM(ref) FDamageEffectParams& Params, FVector Direction, float Magnitude = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetDeathImpulseDirectionParams(UPARAM(ref) FDamageEffectParams& Params, FVector Direction, float Magnitude = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|DamageEffect")
+	static void SetTargetASCParams(UPARAM(ref) FDamageEffectParams& Params, UAbilitySystemComponent* TargetASC);
 };

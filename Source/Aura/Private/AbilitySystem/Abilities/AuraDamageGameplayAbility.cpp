@@ -32,7 +32,7 @@ float UAuraDamageGameplayAbility::GetDamageByLevel() const
 	return Damage.GetValueAtLevel(GetAbilityLevel());
 }
 
-FDamageEffectParams UAuraDamageGameplayAbility::InitialDamageEffect(AActor* TargetActor) const
+FDamageEffectParams UAuraDamageGameplayAbility::InitialDamageEffect(AActor* TargetActor, const FVector& RadialDamageOrigin) const
 {
 	FDamageEffectParams Params;
 	Params.WorldContextObject = GetAvatarActorFromActorInfo();
@@ -53,6 +53,7 @@ FDamageEffectParams UAuraDamageGameplayAbility::InitialDamageEffect(AActor* Targ
 
 	Params.KnockbackForceMagnitude = KnockbackForceMagnitude;
 	Params.KnockbackChance = KnockbackChance;
+
 	if (IsValid(TargetActor))
 	{
 		FRotator Rotation = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
@@ -62,6 +63,12 @@ FDamageEffectParams UAuraDamageGameplayAbility::InitialDamageEffect(AActor* Targ
 		Params.KnockbackForce = ToTarget * KnockbackForceMagnitude;
 	}
 
+	if (bIsRadialDamage) {
+		Params.bIsRadialDamage = bIsRadialDamage;
+		Params.RadialDamageInnerRadius = RadialDamageInnerRadius;
+		Params.RadialDamageOuterRadius = RadialDamageOuterRadius;
+		Params.RadialDamageOrigin = RadialDamageOrigin;
+	}
 
 	return Params;
 }

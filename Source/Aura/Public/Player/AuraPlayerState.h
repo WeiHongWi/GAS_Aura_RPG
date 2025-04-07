@@ -16,7 +16,7 @@ class UAttributeSet;
 class ULevelupInfo;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerStateChangeSignature, int32/*State Change*/);
-
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnLevelChanged, int32 /*StatValue*/, bool /*bLevelUp*/)
 
 
 UCLASS()
@@ -32,7 +32,7 @@ public:
 
 	// Player State Change Delegate
 	FPlayerStateChangeSignature ExpChange;
-	FPlayerStateChangeSignature LevelChange;
+	FOnLevelChanged LevelChange;
 	FPlayerStateChangeSignature AttributePointsChange;
 	FPlayerStateChangeSignature SpellPointsChange;
 
@@ -52,7 +52,10 @@ public:
 	void AddXP(int32 EXP);
 
 	void AddAttributePoints(int32 Points);
+	void SetAttributePoints(int32 Points);
+
 	void AddSpellPoints(int32 Points);
+	void SetSpellPoints(int32 Points);
 
 protected:
 	UPROPERTY(VisibleAnywhere)

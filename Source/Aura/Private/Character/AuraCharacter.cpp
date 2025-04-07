@@ -8,12 +8,18 @@
 #include "Player/AuraPlayerController.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Data/LevelupInfo.h"
+#include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "UI/HUD/AuraHUD.h"
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComp.h"
+#include "Game/AuraGameModeBase.h"
+#include "Game/LoadScreenSaveGame.h"
+#include "Kismet/GameplayStatics.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 
 
 
@@ -45,8 +51,13 @@ AAuraCharacter::AAuraCharacter()
 void AAuraCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
 	InitActorInfo();
-	AddCharacterAbilities();
+	LoadProgress();
+	if (AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		AuraGameMode->LoadWorldState(GetWorld());
+	}
 }
 
 void AAuraCharacter::OnRep_PlayerState()
@@ -154,6 +165,75 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 	AuraPlayerState->AddSpellPoints(InSpellPoints);
 }
 
+void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
+{
+	AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController());
+	check(AuraPlayerController);
+
+	AuraPlayerController->ShowMagicCircle(DecalMaterial);
+	AuraPlayerController->bShowMouseCursor = false;
+}
+
+void AAuraCharacter::HideMagicCircle_Implementation()
+{
+	AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController());
+	check(AuraPlayerController);
+
+	AuraPlayerController->HideMagicCircle();
+	AuraPlayerController->bShowMouseCursor = true;
+}
+
+void AAuraCharacter::SaveProgress_Implementation(const FName& PlayerTag)
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+
+	if (AuraGameMode) {
+		ULoadScreenSaveGame* LoadScreenSaveGame = AuraGameMode->RetrieveInGameSaveData();
+		if (!LoadScreenSaveGame) return;
+
+		LoadScreenSaveGame->PlayerStartTag = PlayerTag;
+
+		AAuraPlayerState* AuraPS = Cast<AAuraPlayerState>(GetPlayerState());
+		if (AuraPS) {
+			LoadScreenSaveGame->level = AuraPS->GetPlayerLevel();
+			LoadScreenSaveGame->exp = AuraPS->GetXP();
+			LoadScreenSaveGame->AttributePoints = AuraPS->GetAttributePoints();
+			LoadScreenSaveGame->SpellPoints = AuraPS->GetSpellPoints();
+		}
+
+		LoadScreenSaveGame->Strength = UAuraAttributeSet::GetStrengthAttribute().GetNumericValue(GetAttributeSet());
+		LoadScreenSaveGame->Intelligence = UAuraAttributeSet::GetIntelligenceAttribute().GetNumericValue(GetAttributeSet());
+		LoadScreenSaveGame->Resilience = UAuraAttributeSet::GetResilienceAttribute().GetNumericValue(GetAttributeSet());
+		LoadScreenSaveGame->Vigor = UAuraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+		
+		LoadScreenSaveGame->bFirstLoadData = false;
+		
+		if (!HasAuthority()) return;
+
+		UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComp);
+
+		FForEachAbility ForEachAbilityDelegate;
+		LoadScreenSaveGame->SaveGameAbilities.Empty();
+		ForEachAbilityDelegate.BindLambda([this, AuraASC, LoadScreenSaveGame](const FGameplayAbilitySpec& spec) {
+			FSaveGameAbility SaveGameAbility;
+			FGameplayTag AbilityTag = UAuraAbilitySystemComponent::GetAbilityTagBySpec(spec);
+			UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(this);
+			FAuraAbilityInfo Info = AbilityInfo->GetAbilityInfoByTag(AbilityTag);
+
+			SaveGameAbility.AbilityTag = AbilityTag;
+			SaveGameAbility.level = spec.Level;
+			SaveGameAbility.GameplayAbility = Info.Ability;
+			SaveGameAbility.AbilityType = Info.AbilityType;
+			SaveGameAbility.AbilityStatus = AuraASC->GetStatusByAbilityTag(AbilityTag);
+			SaveGameAbility.AbilitySlot = AuraASC->GetSlotByAbilityTag(AbilityTag);
+
+			LoadScreenSaveGame->SaveGameAbilities.AddUnique(SaveGameAbility);
+		});
+		AuraASC->ForEachAbility(ForEachAbilityDelegate);
+		AuraGameMode->SaveInProgressData(LoadScreenSaveGame);
+	}
+}
+
 int32 AAuraCharacter::GetPlayerLevel_Implementation()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -226,8 +306,33 @@ void AAuraCharacter::InitActorInfo()
 			AuraHUD->InitOverlay(AuraPlayerState,PlayerController,AbilitySystemComp,AttributeSet);
 		}
 	}
+}
 
-	InitDefaultAttributes();
+void AAuraCharacter::LoadProgress()
+{
+	AAuraGameModeBase* AuraGameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (AuraGameMode) {
+		ULoadScreenSaveGame* LoadScreenSaveGame = AuraGameMode->RetrieveInGameSaveData();
+		if (!LoadScreenSaveGame) return;
+
+		if (LoadScreenSaveGame->bFirstLoadData) {
+			InitDefaultAttributes();
+			AddCharacterAbilities();
+		}
+		else {
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComp)) {
+				AuraASC->AddCharacterAbilitiesFromSaveData(LoadScreenSaveGame);
+			}
+
+			if (AAuraPlayerState* AuraPS = Cast<AAuraPlayerState>(GetPlayerState())) {
+				AuraPS->SetLevel(LoadScreenSaveGame->level);
+				AuraPS->SetXP(LoadScreenSaveGame->exp);
+				AuraPS->SetAttributePoints(LoadScreenSaveGame->AttributePoints);
+				AuraPS->SetSpellPoints(LoadScreenSaveGame->SpellPoints);
+			}
+			UAuraAbilitySystemLibrary::InitializeDefaultAttribute_SaveGame(this, AbilitySystemComp, LoadScreenSaveGame);
+		}
+	}
 }
 
 

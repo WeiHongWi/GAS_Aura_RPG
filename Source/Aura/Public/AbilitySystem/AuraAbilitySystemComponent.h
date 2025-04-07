@@ -7,6 +7,7 @@
 #include "AuraAbilitySystemComponent.generated.h"
 
 
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectTags,FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE(FAbilityInfo);
 DECLARE_DELEGATE_OneParam(FForEachAbility, const FGameplayAbilitySpec&);
@@ -17,7 +18,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FPassiveSpellActivate, const FGameplayTag& 
 /**
  * 
  */
-
+class ULoadScreenSaveGame;
 
 UCLASS()
 class AURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
@@ -37,6 +38,7 @@ public:
 	FPassiveSpellActivate ActivatePassiveEffect;
 
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpAbilities);
+	void AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveGame);
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartUpPassivepAbilities);
 
 	void AbilityTagPress(const FGameplayTag& Tag);

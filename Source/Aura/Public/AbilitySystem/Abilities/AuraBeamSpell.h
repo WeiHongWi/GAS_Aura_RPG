@@ -14,6 +14,9 @@ class AURA_API UAuraBeamSpell : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
 	
+public:
+	virtual FString GetCurrentDescription(int32 level) override;
+	virtual FString GetNextDescription(int32 level) override;
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
 	TObjectPtr < AActor> CursorHitActor;
